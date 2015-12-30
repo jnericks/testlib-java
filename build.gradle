@@ -74,7 +74,7 @@ publishing {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     name 'testlib-java'
-                    description 'TestLib Java'
+                    description 'Base Java Test Library'
                     url "https://github.com/jnericks/testlib-java"
                     scm {
                         url "https://github.com/jnericks/testlib-java"
@@ -112,6 +112,14 @@ bintray {
         vcsUrl = 'https://github.com/jnericks/testlib-java'
         labels = ['test']
         publicDownloadNumbers = true
+        version {
+            name = version
+            desc 'Base Java Test Library'
+            vcsTag = version
+            gpg {
+                sign = true
+            }
+        }
     }
 }
 
