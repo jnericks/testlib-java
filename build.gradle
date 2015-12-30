@@ -9,8 +9,8 @@ apply plugin: 'idea'
 
 sourceCompatibility = 1.8
 
-baseVersion = "1.0"
-travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+def baseVersion = "1.0"
+def travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
 version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : baseVersion
 
 println 'Version: ' + version
