@@ -1,0 +1,120 @@
+import java.text.SimpleDateFormat
+
+plugins {
+    id "com.jfrog.bintray" version "1.5"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'groovy'
+
+sourceCompatibility = 1.8
+
+def releaseVersion = System.properties.RELEASE_VERSION
+version = releaseVersion ? releaseVersion : new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
+group = 'com.jnericks.testlib'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+jar {
+    from "LICENSE.md"
+}
+
+dependencies {
+    compile "com.google.guava:guava:19.0"
+    compile "junit:junit:4.12"
+    compile "org.assertj:assertj-core:3.2.0"
+    compile "org.mockito:mockito-core:2.0.31-beta"
+    compile "org.powermock:powermock-module-junit4:1.6.2"
+    compile "org.powermock:powermock-api-mockito:1.6.2"
+    testCompile "com.google.guava:guava:19.0"
+    testCompile "junit:junit:4.12"
+    testCompile "org.assertj:assertj-core:3.2.0"
+    testCompile "org.mockito:mockito-core:2.0.31-beta"
+    testCompile "org.powermock:powermock-module-junit4:1.6.2"
+    testCompile "org.powermock:powermock-api-mockito:1.6.2"
+}
+
+task sourcesJar(type: Jar) {
+    dependsOn classes
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            version version
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name 'TestLib-Java'
+                    description 'TestLib-Java'
+                    url "https://github.com/jnericks/testlib-java"
+                    scm {
+                        url "https://github.com/jnericks/testlib-java"
+                        connection "https://github.com/jnericks/testlib-java"
+                        developerConnection "https://github.com/jnericks/testlib-java"
+                    }
+                    licenses {
+                        license {
+                            name 'MIT'
+                            url 'https://github.com/jnericks/testlib-java/blob/master/LICENSE.md'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'jnericks'
+                            name 'Jon Erickson'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.env.BINTRAY_USER ?: project["bintray.user"]
+    key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+    publications = ['MyPublication']
+    publish = true
+    pkg {
+        repo = 'testlib-java'
+        name = 'testlib-java'
+        desc = 'TestLib-Java'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/jnericks/testlib-java'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+    distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
