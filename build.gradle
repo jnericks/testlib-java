@@ -13,6 +13,8 @@ baseVersion = "1.0"
 travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
 version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : baseVersion
 
+println 'Version: ' + version
+
 group = 'com.jnericks.testlib'
 
 repositories {
