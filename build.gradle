@@ -74,7 +74,7 @@ publishing {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     name 'testlib-java'
-                    description 'Base Java Test Library'
+                    description 'Base Test Library for Java 8 Projects'
                     url "https://github.com/jnericks/testlib-java"
                     scm {
                         url "https://github.com/jnericks/testlib-java"
@@ -108,6 +108,7 @@ bintray {
     pkg {
         repo = 'testlib-java'
         name = 'testlib-java'
+        desc = 'Base Test Library for Java 8 Projects'
         userOrg = user
         licenses = ['MIT']
         vcsUrl = 'https://github.com/jnericks/testlib-java'
