@@ -113,13 +113,6 @@ bintray {
         vcsUrl = 'https://github.com/jnericks/testlib-java'
         labels = ['test']
         publicDownloadNumbers = true
-        version {
-            name = version
-            vcsTag = version
-            gpg {
-                sign = true
-            }
-        }
     }
 }
 
