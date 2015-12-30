@@ -9,9 +9,9 @@ apply plugin: 'idea'
 
 sourceCompatibility = 1.8
 
-def baseVersion = "1.0"
-def travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
-def version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : baseVersion
+baseVersion = "1.0"
+travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : baseVersion
 
 group = 'com.jnericks.testlib'
 
