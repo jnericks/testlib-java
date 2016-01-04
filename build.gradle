@@ -115,7 +115,6 @@ bintray {
         labels = ['test']
         publicDownloadNumbers = true
         version {
-            name = version
             gpg {
                 sign = true
             }
