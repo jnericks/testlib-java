@@ -115,6 +115,8 @@ bintray {
         labels = ['test']
         publicDownloadNumbers = true
         version {
+            name = "${version}"
+            vcsTag = "${version}"
             gpg {
                 sign = true
             }
