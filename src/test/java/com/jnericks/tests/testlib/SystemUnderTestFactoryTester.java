@@ -118,21 +118,28 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_throw_exception_given_configuring_an_object_that_is_NOT_a_dependency()
+        public void should_throw_exception_when_configuring_an_object_that_is_NOT_a_dependency()
         {
             assertThatThrownBy(() -> sutFactory.forDependency(NotADependency.class).use(mock(NotADependency.class)))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        public void should_throw_exception_given_retrieving_object_that_is_NOT_a_dependency()
+        public void should_throw_exception_when_configuring_an_object_with_a_TypeToken_that_is_NOT_a_dependency()
+        {
+            assertThatThrownBy(() -> sutFactory.forDependency(new TypeToken<List<NotADependency>>() { }).use(new ArrayList<>()))
+                    .isInstanceOf(UnsupportedOperationException.class);
+        }
+
+        @Test
+        public void should_throw_exception_when_retrieving_object_that_is_NOT_a_dependency()
         {
             assertThatThrownBy(() -> sutFactory.dependency(NotADependency.class))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        public void should_throw_exception_given_trying_to_retrieve_sut_from_method()
+        public void should_throw_exception_when_trying_to_retrieve_sut_from_method()
         {
             assertThatThrownBy(() -> sutFactory.dependency(SystemForTest.class))
                     .isInstanceOf(UnsupportedOperationException.class);

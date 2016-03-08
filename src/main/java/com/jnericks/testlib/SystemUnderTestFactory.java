@@ -72,7 +72,7 @@ public class SystemUnderTestFactory<TSut>
         }
         catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
