@@ -1,8 +1,6 @@
 language: java
 jdk:
   - oraclejdk8
-before_install:
-  - pip install codecov
 after_success:
-  - codecov
+  - bash <(curl -s https://codecov.io/bash)
   - ./gradlew bintrayUpload -x check --info
