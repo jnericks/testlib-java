@@ -24,7 +24,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
-@SuppressWarnings("unchecked")
 public class SystemUnderTestFactoryTester extends BaseUnitTester
 {
     public static class WhenSystemIsBasic extends SystemUnderTestFactoryTester

@@ -16,7 +16,6 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
         SutFactory = new SystemUnderTestFactory<>(parameterizedType);
     }
 
-    @SuppressWarnings("unchecked")
     protected Class<TSut> getParameterizedType()
     {
         Type type = getClass().getGenericSuperclass();
