@@ -9,6 +9,7 @@ import com.jnericks.tests.testlib.TestObjects.DependencyB;
 import com.jnericks.tests.testlib.TestObjects.NotADependency;
 import com.jnericks.tests.testlib.TestObjects.SystemForTest;
 import com.jnericks.tests.testlib.TestObjects.SystemWithGenericDependencies;
+import com.jnericks.tests.testlib.TestObjects.SystemWithNotMockableDependency;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.BDDMockito.given;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -211,6 +213,24 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             Object actual = sutFactory.sut().passToDependencyA(objectPassedIn);
             BDDMockito.then(function).should(ReceivedOnce).apply(objectPassedIn);
             assertThat(actual).isSameAs(objectReturned);
+        }
+    }
+
+    public static class WhenSystemHasNonMockableDependency extends SystemUnderTestFactoryTester
+    {
+        SystemUnderTestFactory<SystemWithNotMockableDependency> sutFactory;
+        private Throwable throwable;
+
+        @Before
+        public void setup_context()
+        {
+            throwable = catchThrowable(() -> new SystemUnderTestFactory<>(SystemWithNotMockableDependency.class));
+        }
+
+        @Test
+        public void should_throw_exception()
+        {
+            then(throwable).isInstanceOf(IllegalArgumentException.class);
         }
     }
 
