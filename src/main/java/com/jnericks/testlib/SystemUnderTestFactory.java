@@ -27,7 +27,7 @@ public class SystemUnderTestFactory<TSut>
         _typeToken = TypeToken.of(type);
 
         _dependencies = new ArrayList<>();
-        _ctor = getGreediestCtor(_typeToken);
+        _ctor = TestUtils.getGreediestCtor(_typeToken);
 
         Type[] parameterTypes = _ctor.getGenericParameterTypes();
         for (Type t : parameterTypes)
@@ -126,28 +126,6 @@ public class SystemUnderTestFactory<TSut>
         }
 
         throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
-    }
-
-    Constructor getGreediestCtor(TypeToken<TSut> typeToken)
-    {
-        Constructor[] ctors = typeToken.getRawType().getConstructors();
-        Constructor greediest = ctors[0];
-        int count = greediest.getParameterCount();
-        int len = ctors.length;
-        if (len > 1)
-        {
-            for (int i = 1; i < len; i++)
-            {
-                Constructor ctor = ctors[i];
-                if (ctor.getParameterCount() > count)
-                {
-                    greediest = ctor;
-                    count = ctor.getParameterCount();
-                }
-            }
-        }
-
-        return greediest;
     }
 
     public class DoForDependency<TDoFor>

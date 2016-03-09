@@ -5,14 +5,14 @@ public class SystemForTest
     DependencyA _dependencyA;
     DependencyB _dependencyB;
 
-    public SystemForTest(DependencyB dependencyB)
-    {
-        _dependencyB = dependencyB;
-    }
-
     public SystemForTest(DependencyA dependencyA, DependencyB dependencyB)
     {
         _dependencyA = dependencyA;
+        _dependencyB = dependencyB;
+    }
+
+    public SystemForTest(DependencyB dependencyB)
+    {
         _dependencyB = dependencyB;
     }
 

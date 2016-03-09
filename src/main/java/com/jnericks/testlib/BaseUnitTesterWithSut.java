@@ -20,16 +20,9 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     {
         Type type = getClass().getGenericSuperclass();
 
-        while (!(type instanceof ParameterizedType) || ((ParameterizedType)type).getRawType() != BaseUnitTesterWithSut.class)
+        while (!(type instanceof ParameterizedType && ((ParameterizedType)type).getRawType().equals(BaseUnitTesterWithSut.class)))
         {
-            if (type instanceof ParameterizedType)
-            {
-                type = ((Class<?>)((ParameterizedType)type).getRawType()).getGenericSuperclass();
-            }
-            else
-            {
-                type = ((Class<?>)type).getGenericSuperclass();
-            }
+            type = ((Class<?>)type).getGenericSuperclass();
         }
 
         type = ((ParameterizedType)type).getActualTypeArguments()[0];
