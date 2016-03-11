@@ -16,7 +16,7 @@ version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : ba
 
 println 'Version: ' + version
 
-group = 'com.jnericks.testlib'
+group = 'com.jnericks'
 
 repositories {
     mavenCentral()
@@ -74,7 +74,7 @@ publishing {
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'testlib-java'
+                    name 'TestLib-Java'
                     description 'Base Test Library for Java 8 Projects'
                     url "https://github.com/jnericks/testlib-java"
                     scm {
@@ -126,12 +126,12 @@ bintray {
 jacocoTestReport {
     group = "reporting"
     description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allSource)
     reports {
         xml.enabled true
         html.enabled true
         csv.enabled false
     }
-    additionalSourceDirs = files(sourceSets.main.allSource)
 }
 
 task wrapper(type: Wrapper) {
@@ -139,4 +139,4 @@ task wrapper(type: Wrapper) {
     distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
-check.dependsOn jacocoTestReport
+test.finalizedBy jacocoTestReport
