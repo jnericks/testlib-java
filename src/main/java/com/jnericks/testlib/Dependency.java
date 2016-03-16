@@ -12,12 +12,6 @@ public class Dependency<TDependency>
         this.typeToken = typeToken;
     }
 
-    Dependency(TypeToken<TDependency> typeToken, TDependency object)
-    {
-        this.typeToken = typeToken;
-        this.object = object;
-    }
-
     public TDependency get()
     {
         try
