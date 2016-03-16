@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class SystemUnderTestFactory<TSut>
 {
@@ -102,16 +103,30 @@ public class SystemUnderTestFactory<TSut>
 
     public <TDependency> DoForDependency<TDependency> forDependency(Class<TDependency> type)
     {
-        if (_dependencies.stream().anyMatch(x -> x.typeToken.isSubtypeOf(type)))
-            return new DoForDependency(type, _dependencies);
-
-        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", type.getSimpleName(), _typeToken.getRawType().getSimpleName()));
+        return forDependency(TypeToken.of(type));
     }
 
     public <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken)
     {
-        if (_dependencies.stream().anyMatch(x -> x.typeToken.equals(typeToken)))
-            return new DoForDependency(typeToken, _dependencies);
+        List<Dependency> dependencies = _dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
+
+        if (dependencies.size() > 0)
+            return new DoForDependency(dependencies);
+
+        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
+    }
+
+    public <TDependency> DoForDependencies<TDependency> forDependencies(Class<TDependency> type)
+    {
+        return forDependencies(TypeToken.of(type));
+    }
+
+    public <TDependency> DoForDependencies<TDependency> forDependencies(TypeToken<TDependency> typeToken)
+    {
+        List<Dependency> dependencies = _dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
+
+        if (dependencies.size() > 0)
+            return new DoForDependencies<>(dependencies);
 
         throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
     }
