@@ -9,7 +9,7 @@ import com.jnericks.tests.testlib.TestObjects.DependencyB;
 import com.jnericks.tests.testlib.TestObjects.NotADependency;
 import com.jnericks.tests.testlib.TestObjects.SystemForTest;
 import com.jnericks.tests.testlib.TestObjects.SystemWithGenericDependencies;
-import com.jnericks.tests.testlib.TestObjects.SystemWithNotMockableDependency;
+import com.jnericks.tests.testlib.TestObjects.SystemWithPrimitives;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -21,8 +21,8 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
@@ -30,7 +30,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
 {
     public static class WhenSystemIsBasic extends SystemUnderTestFactoryTester
     {
-        SystemUnderTestFactory<SystemForTest> sutFactory;
+        protected SystemUnderTestFactory<SystemForTest> sutFactory;
 
         @Before
         public void setup_context()
@@ -216,27 +216,9 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
     }
 
-    public static class WhenSystemHasNonMockableDependency extends SystemUnderTestFactoryTester
-    {
-        SystemUnderTestFactory<SystemWithNotMockableDependency> sutFactory;
-        private Throwable throwable;
-
-        @Before
-        public void setup_context()
-        {
-            throwable = catchThrowable(() -> new SystemUnderTestFactory<>(SystemWithNotMockableDependency.class));
-        }
-
-        @Test
-        public void should_throw_exception()
-        {
-            then(throwable).isInstanceOf(IllegalArgumentException.class);
-        }
-    }
-
     public static class WhenSystemHasGenericDependencies extends SystemUnderTestFactoryTester
     {
-        SystemUnderTestFactory<SystemWithGenericDependencies> sutFactory;
+        protected SystemUnderTestFactory<SystemWithGenericDependencies> sutFactory;
 
         @Before
         public void setup_context()
@@ -255,6 +237,56 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
 
             then(sutFactory.sut().getA()).isSameAs(customA);
             then(sutFactory.sut().getBs()).isSameAs(customBs);
+        }
+    }
+
+    public static class WhenSystemHasPrimitiveDependency extends SystemUnderTestFactoryTester
+    {
+        protected SystemUnderTestFactory<SystemWithPrimitives> sutFactory;
+
+        public static class AndPrimitiveDependencyIsSupplied extends WhenSystemHasPrimitiveDependency
+        {
+            protected int integer = 12;
+
+            @Before
+            public void setup_context()
+            {
+                sutFactory = new SystemUnderTestFactory<>(SystemWithPrimitives.class);
+                sutFactory.forDependency(int.class).use(integer);
+            }
+
+            @Test
+            public void should_be_able_to_mock_and_execute_mockable_dependency()
+            {
+                Object input = new Object();
+                Object expected = new Object();
+                given(sutFactory.dependency(DependencyA.class).doSomething(input)).willReturn(expected);
+
+                Object actual = sutFactory.sut().executeA(input);
+
+                then(actual).isSameAs(expected);
+            }
+
+            @Test
+            public void should_be_able_to_supply_value_for_non_mockable_dependency()
+            {
+                then(sutFactory.sut().getI()).isEqualTo(integer);
+            }
+        }
+
+        public static class AndPrimitiveDependencyIsNotSupplied extends WhenSystemHasPrimitiveDependency
+        {
+            @Before
+            public void setup_context()
+            {
+                sutFactory = new SystemUnderTestFactory<>(SystemWithPrimitives.class);
+            }
+
+            @Test
+            public void should_be_able_to_mock_and_execute_mockable_dependency()
+            {
+                thenThrownBy(() -> sutFactory.createSut()).isInstanceOf(IllegalArgumentException.class);
+            }
         }
     }
 }

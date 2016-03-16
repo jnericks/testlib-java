@@ -78,7 +78,7 @@ public class SystemUnderTestFactory<TSut>
 
     private Object[] getCtorArgs()
     {
-        return _dependencies.stream().map(x -> x.object).toArray();
+        return _dependencies.stream().map(Dependency::get).toArray();
     }
 
     public TSut sut()
@@ -93,7 +93,7 @@ public class SystemUnderTestFactory<TSut>
         {
             if (d.typeToken.isSubtypeOf(type))
             {
-                return (TDependency)d.object;
+                return (TDependency)d.get();
             }
         }
 
@@ -102,70 +102,17 @@ public class SystemUnderTestFactory<TSut>
 
     public <TDependency> DoForDependency<TDependency> forDependency(Class<TDependency> type)
     {
-        for (int i = 0; i < _dependencies.size(); i++)
-        {
-            Dependency dependency = _dependencies.get(i);
-            if (dependency.typeToken.isSubtypeOf(type))
-            {
-                return new DoForDependency(type, _dependencies, i);
-            }
-        }
+        if (_dependencies.stream().anyMatch(x -> x.typeToken.isSubtypeOf(type)))
+            return new DoForDependency(type, _dependencies);
 
         throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", type.getSimpleName(), _typeToken.getRawType().getSimpleName()));
     }
 
     public <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken)
     {
-        for (int i = 0; i < _dependencies.size(); i++)
-        {
-            Dependency dependency = _dependencies.get(i);
-            if (typeToken.equals(dependency.typeToken))
-            {
-                return new DoForDependency(typeToken, _dependencies, i);
-            }
-        }
+        if (_dependencies.stream().anyMatch(x -> x.typeToken.equals(typeToken)))
+            return new DoForDependency(typeToken, _dependencies);
 
         throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
-    }
-
-    public class DoForDependency<TDoFor>
-    {
-        final TypeToken<TDoFor> _typeToken;
-        final List<Dependency> _dependencies;
-        int _index;
-
-        protected DoForDependency(Class<TDoFor> type, List<Dependency> dependencies, int index)
-        {
-            this(TypeToken.of(type), dependencies, index);
-        }
-
-        protected DoForDependency(TypeToken<TDoFor> type, List<Dependency> dependencies, int index)
-        {
-            _typeToken = type;
-            _dependencies = dependencies;
-            _index = index;
-        }
-
-        public void use(TDoFor dependency)
-        {
-            _dependencies.set(_index, new Dependency(_typeToken, dependency));
-        }
-    }
-
-    private class Dependency<TDependency>
-    {
-        public TypeToken<TDependency> typeToken;
-        public TDependency object;
-
-        public Dependency(TypeToken<TDependency> typeToken)
-        {
-            this(typeToken, Mocks.mock(typeToken));
-        }
-
-        public Dependency(TypeToken<TDependency> typeToken, TDependency use)
-        {
-            this.typeToken = typeToken;
-            this.object = use;
-        }
     }
 }
