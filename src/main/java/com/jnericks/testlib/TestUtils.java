@@ -4,8 +4,10 @@ import com.google.common.reflect.TypeToken;
 
 import java.lang.reflect.Constructor;
 
-public class TestUtils
+public final class TestUtils
 {
+    private TestUtils() { }
+
     public static <T> Constructor<T> getGreediestCtor(Class<T> aClass)
     {
         return getGreediestCtor(TypeToken.of(aClass));
