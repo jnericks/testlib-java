@@ -10,7 +10,7 @@ import com.jnericks.tests.testlib.TestObjects.DependencyB;
 import com.jnericks.tests.testlib.TestObjects.NotADependency;
 import com.jnericks.tests.testlib.TestObjects.SystemForTest;
 import com.jnericks.tests.testlib.TestObjects.SystemWithGenericDependencies;
-import com.jnericks.tests.testlib.TestObjects.SystemWithMultipleStringDependencies;
+import com.jnericks.tests.testlib.TestObjects.SystemWithMultipleStringAndIntDependencies;
 import com.jnericks.tests.testlib.TestObjects.SystemWithPrimitives;
 import org.junit.Before;
 import org.junit.Test;
@@ -273,12 +273,82 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
     }
 
-    public static class WhenSystemHasMultipleDependenciesOfTheSameType extends BaseUnitTesterWithSut<SystemWithMultipleStringDependencies>
+    public static class WhenSystemHasMultipleDependenciesOfTheSameType extends BaseUnitTesterWithSut<SystemWithMultipleStringAndIntDependencies>
     {
+        protected String str1 = "one";
+        protected String str2 = "two";
+        protected String str3 = "three";
+
+        protected int int1 = 1;
+        protected int int2 = 2;
+        protected int int3 = 3;
+
         @Test
-        public void should_be_able_to_supply_it_with_a_list_of_values()
+        public void should_thrown_exception_on_non_dependency()
         {
-            SutFactory.forDependencies(String.class).use("string one", "string two", "string three");
+            thenThrownBy(() -> SutFactory.forDependencies(boolean.class).use(true, false)).isInstanceOf(UnsupportedOperationException.class);
+        }
+
+        public static class AndDependencyListIsLessThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
+        {
+            @Test
+            public void should_throw_exception_for_String()
+            {
+                thenThrownBy(() -> SutFactory.forDependencies(String.class).use(str1, str2)).isInstanceOf(IllegalArgumentException.class);
+            }
+
+            @Test
+            public void should_throw_exception_for_int()
+            {
+                thenThrownBy(() -> SutFactory.forDependencies(int.class).use(int1, int2)).isInstanceOf(IllegalArgumentException.class);
+            }
+        }
+
+        public static class AndDependencyListIsEqualToCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
+        {
+            @Before
+            public void setup_context()
+            {
+                SutFactory.forDependencies(String.class).use(str1, str2, str3);
+                SutFactory.forDependencies(int.class).use(int1, int2, int3);
+            }
+
+            @Test
+            public void should_be_able_to_supply_it_with_a_list_of_String_values()
+            {
+                then(SutFactory.sut().getStrings()).containsExactly(str1, str2, str3);
+            }
+
+            @Test
+            public void should_be_able_to_supply_it_with_a_list_of_int_values()
+            {
+                then(SutFactory.sut().getInts()).containsExactly(int1, int2, int3);
+            }
+
+            @Test
+            public void should_still_have_generated_mock_for_dependency()
+            {
+                Object input = new Object();
+                Object expected = new Object();
+                given(SutFactory.dependency(DependencyA.class).doSomething(input)).willReturn(expected);
+
+                then(SutFactory.sut().executeA(input)).isSameAs(expected);
+            }
+        }
+
+        public static class AndDependencyListIsGreaterThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
+        {
+            @Test
+            public void should_throw_exception_for_String()
+            {
+                thenThrownBy(() -> SutFactory.forDependencies(String.class).use(str1, str2, str3, "four")).isInstanceOf(IllegalArgumentException.class);
+            }
+
+            @Test
+            public void should_throw_exception_for_int()
+            {
+                thenThrownBy(() -> SutFactory.forDependencies(int.class).use(int1, int2, int3, 4)).isInstanceOf(IllegalArgumentException.class);
+            }
         }
     }
 }

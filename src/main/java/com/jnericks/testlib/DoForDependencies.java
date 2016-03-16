@@ -1,6 +1,6 @@
 package com.jnericks.testlib;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,17 +15,15 @@ public class DoForDependencies<TDoFor>
 
     public void use(TDoFor... dependencies)
     {
-//        if (_dependencies.size() != dependency.length)
-//            throw new RuntimeException();
-
-        for (int i = 0; i < _dependencies.size(); i++)
-            _dependencies.get(i).set(dependencies[i]);
+        use(Arrays.asList(dependencies));
     }
 
-    public void use(Collection<TDoFor> dependencies)
+    public void use(List<TDoFor> dependencies)
     {
-        Iterator<TDoFor> iterator = dependencies.iterator();
+        if (_dependencies.size() != dependencies.size())
+            throw new IllegalArgumentException(String.format("List of dependencies are not the same size, expecting %d, received %d", _dependencies.size(), dependencies.size()));
 
+        Iterator<TDoFor> iterator = dependencies.iterator();
         for (int i = 0; i < _dependencies.size(); i++)
         {
             _dependencies.get(i).set(iterator.next());
