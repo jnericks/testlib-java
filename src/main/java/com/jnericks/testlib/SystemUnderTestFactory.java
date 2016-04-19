@@ -63,7 +63,7 @@ public class SystemUnderTestFactory<TSut>
                     _preProcessor.run();
 
                 if (_sutFactory == null)
-                    _sut = (TSut)_ctor.newInstance(getCtorArgs());
+                    _sut = (TSut) _ctor.newInstance(getCtorArgs());
                 else
                     _sut = _sutFactory.get();
 
@@ -94,7 +94,7 @@ public class SystemUnderTestFactory<TSut>
         {
             if (d.typeToken.isSubtypeOf(type))
             {
-                return (TDependency)d.get();
+                return (TDependency) d.get();
             }
         }
 

@@ -2,6 +2,7 @@ package com.jnericks.tests.testlib;
 
 import com.jnericks.testlib.TestUtils;
 import com.jnericks.tests.testlib.TestObjects.SystemWithManyConstructors;
+
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;

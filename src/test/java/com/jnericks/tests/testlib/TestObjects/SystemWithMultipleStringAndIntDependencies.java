@@ -8,9 +8,9 @@ public class SystemWithMultipleStringAndIntDependencies
 
     public SystemWithMultipleStringAndIntDependencies(String s1, int i1, String s2, DependencyA a, int i2, String s3, int i3)
     {
-        this.strings = new String[] { s1, s2, s3 };
+        this.strings = new String[]{s1, s2, s3};
         this.a = a;
-        this.ints = new int[] { i1, i2, i3 };
+        this.ints = new int[]{i1, i2, i3};
     }
 
     public String[] getStrings()

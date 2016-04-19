@@ -1,6 +1,7 @@
 package com.jnericks.tests.testlib;
 
 import com.jnericks.testlib.BaseUnitTesterWithSut;
+
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,9 +17,9 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
             int input = 22;
             String output = "hello";
 
-            given(SutFactory.dependency(Dependency.class).toString(input)).willReturn(output);
+            given(dependency(Dependency.class).toString(input)).willReturn(output);
 
-            String actual = SutFactory.sut().execute(input);
+            String actual = sut().execute(input);
 
             assertThat(actual).isEqualTo(output);
         }
@@ -31,9 +32,9 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
                 int input = 22;
                 String output = "hello";
 
-                given(SutFactory.dependency(Dependency.class).toString(input)).willReturn(output);
+                given(dependency(Dependency.class).toString(input)).willReturn(output);
 
-                String actual = SutFactory.sut().execute(input);
+                String actual = sut().execute(input);
 
                 assertThat(actual).isEqualTo(output);
             }
@@ -48,9 +49,9 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
             int input = 22;
             String output = "hello";
 
-            given(SutFactory.dependency(Dependency.class).toString(input)).willReturn(output);
+            given(dependency(Dependency.class).toString(input)).willReturn(output);
 
-            String actual = SutFactory.sut().execute(input);
+            String actual = sut().execute(input);
 
             assertThat(actual).isEqualTo(output);
         }
@@ -63,9 +64,9 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
                 int input = 22;
                 String output = "hello";
 
-                given(SutFactory.dependency(Dependency.class).toString(input)).willReturn(output);
+                given(dependency(Dependency.class).toString(input)).willReturn(output);
 
-                String actual = SutFactory.sut().execute(input);
+                String actual = sut().execute(input);
 
                 assertThat(actual).isEqualTo(output);
             }
@@ -78,9 +79,9 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
         int input = 22;
         String output = "hello";
 
-        given(SutFactory.dependency(Dependency.class).toString(input)).willReturn(output);
+        given(dependency(Dependency.class).toString(input)).willReturn(output);
 
-        String actual = SutFactory.sut().execute(input);
+        String actual = sut().execute(input);
 
         assertThat(actual).isEqualTo(output);
     }

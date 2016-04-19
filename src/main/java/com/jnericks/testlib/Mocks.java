@@ -1,6 +1,7 @@
 package com.jnericks.testlib;
 
 import com.google.common.reflect.TypeToken;
+
 import org.powermock.api.mockito.PowerMockito;
 
 public final class Mocks
@@ -9,6 +10,6 @@ public final class Mocks
 
     public static <T> T mock(TypeToken<T> typeTokenToMock)
     {
-        return PowerMockito.mock((Class<T>)typeTokenToMock.getRawType());
+        return PowerMockito.mock((Class<T>) typeTokenToMock.getRawType());
     }
 }

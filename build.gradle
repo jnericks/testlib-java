@@ -10,7 +10,7 @@ apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 
-def baseVersion = "1.0"
+def baseVersion = "1.1"
 def travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
 version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : baseVersion
 

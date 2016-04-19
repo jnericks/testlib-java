@@ -1,6 +1,7 @@
 package com.jnericks.tests.testlib;
 
 import com.google.common.reflect.TypeToken;
+
 import com.jnericks.testlib.BaseUnitTester;
 import com.jnericks.testlib.BaseUnitTesterWithSut;
 import com.jnericks.testlib.SystemUnderTestFactory;
@@ -12,6 +13,7 @@ import com.jnericks.tests.testlib.TestObjects.SystemForTest;
 import com.jnericks.tests.testlib.TestObjects.SystemWithGenericDependencies;
 import com.jnericks.tests.testlib.TestObjects.SystemWithMultipleStringAndIntDependencies;
 import com.jnericks.tests.testlib.TestObjects.SystemWithPrimitives;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -35,13 +37,13 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Before
         public void setup_context()
         {
-            SutFactory = new SystemUnderTestFactory<>(SystemForTest.class);
+            sutFactory = new SystemUnderTestFactory<>(SystemForTest.class);
         }
 
         @Test
         public void should_be_able_to_create_sut()
         {
-            SystemForTest sut = SutFactory.sut();
+            SystemForTest sut = sut();
 
             assertThat(sut).isExactlyInstanceOf(SystemForTest.class);
         }
@@ -49,8 +51,8 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_have_sut_be_a_singleton()
         {
-            SystemForTest sut1 = SutFactory.sut();
-            SystemForTest sut2 = SutFactory.sut();
+            SystemForTest sut1 = sut();
+            SystemForTest sut2 = sut();
 
             assertThat(sut1).isSameAs(sut2);
         }
@@ -58,7 +60,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_have_dependency_a()
         {
-            DependencyA a = SutFactory.dependency(DependencyA.class);
+            DependencyA a = dependency(DependencyA.class);
 
             assertThat(a).isInstanceOf(DependencyA.class);
         }
@@ -66,7 +68,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_have_dependency_b()
         {
-            DependencyB a = SutFactory.dependency(DependencyB.class);
+            DependencyB a = dependency(DependencyB.class);
 
             assertThat(a).isInstanceOf(DependencyB.class);
         }
@@ -74,17 +76,17 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_do_a_stuff()
         {
-            SutFactory.sut().doAStuff();
+            sut().doAStuff();
 
-            BDDMockito.then(SutFactory.dependency(DependencyA.class)).should(ReceivedOnce).aStuff();
+            BDDMockito.then(dependency(DependencyA.class)).should(ReceivedOnce).aStuff();
         }
 
         @Test
         public void should_be_able_to_do_b_stuff()
         {
-            SutFactory.sut().doBStuff();
+            sut().doBStuff();
 
-            BDDMockito.then(SutFactory.dependency(DependencyB.class)).should(ReceivedOnce).bStuff();
+            BDDMockito.then(dependency(DependencyB.class)).should(ReceivedOnce).bStuff();
         }
 
         @Test
@@ -93,10 +95,10 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             Object objectPassedToSut = new Object();
             Object objectReturnedFromDependencyA = new Object();
 
-            given(SutFactory.dependency(DependencyA.class).doSomething(objectPassedToSut))
+            given(dependency(DependencyA.class).doSomething(objectPassedToSut))
                     .willReturn(objectReturnedFromDependencyA);
 
-            Object actual = SutFactory.sut().passToDependencyA(objectPassedToSut);
+            Object actual = sut().passToDependencyA(objectPassedToSut);
             assertThat(actual).isSameAs(objectReturnedFromDependencyA);
         }
 
@@ -104,17 +106,17 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         public void should_be_able_to_retrieve_injected_substitute()
         {
             DependencyA myDependencyA = mock(DependencyA.class);
-            SutFactory.forDependency(DependencyA.class).use(myDependencyA);
+            forDependency(DependencyA.class).use(myDependencyA);
 
-            assertThat(SutFactory.dependency(DependencyA.class)).isSameAs(myDependencyA);
+            assertThat(dependency(DependencyA.class)).isSameAs(myDependencyA);
         }
 
         @Test
         public void should_be_able_to_assert_on_injected_substitute()
         {
             DependencyA myDependencyA = mock(DependencyA.class);
-            SutFactory.forDependency(DependencyA.class).use(myDependencyA);
-            SutFactory.sut().doAStuff();
+            forDependency(DependencyA.class).use(myDependencyA);
+            sut().doAStuff();
 
             BDDMockito.then(myDependencyA).should(ReceivedOnce).aStuff();
         }
@@ -122,28 +124,28 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_throw_exception_when_configuring_an_object_that_is_NOT_a_dependency()
         {
-            assertThatThrownBy(() -> SutFactory.forDependency(NotADependency.class).use(mock(NotADependency.class)))
+            assertThatThrownBy(() -> forDependency(NotADependency.class).use(mock(NotADependency.class)))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
         public void should_throw_exception_when_configuring_an_object_with_a_TypeToken_that_is_NOT_a_dependency()
         {
-            assertThatThrownBy(() -> SutFactory.forDependency(new TypeToken<List<NotADependency>>() { }).use(new ArrayList<>()))
+            assertThatThrownBy(() -> forDependency(new TypeToken<List<NotADependency>>() {}).use(new ArrayList<>()))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
         public void should_throw_exception_when_retrieving_object_that_is_NOT_a_dependency()
         {
-            assertThatThrownBy(() -> SutFactory.dependency(NotADependency.class))
+            assertThatThrownBy(() -> dependency(NotADependency.class))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
         public void should_throw_exception_when_trying_to_retrieve_sut_from_method()
         {
-            assertThatThrownBy(() -> SutFactory.dependency(SystemForTest.class))
+            assertThatThrownBy(() -> dependency(SystemForTest.class))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
@@ -151,8 +153,8 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         public void should_be_able_to_override_internal_sut_factory()
         {
             SystemForTest system = mock(SystemForTest.class);
-            SutFactory.createSutUsing(() -> system);
-            assertThat(SutFactory.sut()).isSameAs(system);
+            createSutUsing(() -> system);
+            assertThat(sut()).isSameAs(system);
         }
 
         @Test
@@ -160,8 +162,8 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         {
             Runnable runnable = mock(Runnable.class);
 
-            SutFactory.beforeSutCreated(runnable);
-            SutFactory.createSut();
+            beforeSutCreated(runnable);
+            createSut();
 
             BDDMockito.then(runnable).should(ReceivedOnce).run();
         }
@@ -171,10 +173,10 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         {
             Consumer<SystemForTest> consumer = mock(Consumer.class);
 
-            SutFactory.afterSutCreated(consumer);
-            SutFactory.createSut();
+            afterSutCreated(consumer);
+            createSut();
 
-            BDDMockito.then(consumer).should(ReceivedOnce).accept(SutFactory.sut());
+            BDDMockito.then(consumer).should(ReceivedOnce).accept(sut());
         }
 
         @Test
@@ -183,14 +185,14 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             Runnable runnable = mock(Runnable.class);
             Consumer<SystemForTest> consumer = mock(Consumer.class);
 
-            SutFactory.beforeSutCreated(runnable);
-            SutFactory.afterSutCreated(consumer);
+            beforeSutCreated(runnable);
+            afterSutCreated(consumer);
 
-            SutFactory.createSutUsing(() -> new SystemForTest(null));
-            SutFactory.createSut();
+            createSutUsing(() -> new SystemForTest(null));
+            createSut();
 
             BDDMockito.then(runnable).should(ReceivedOnce).run();
-            BDDMockito.then(consumer).should(ReceivedOnce).accept(SutFactory.sut());
+            BDDMockito.then(consumer).should(ReceivedOnce).accept(sut());
         }
 
         @Test
@@ -205,12 +207,12 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
 
             DependencyA impl = new DependencyAImpl(runnable, function);
 
-            SutFactory.forDependency(DependencyA.class).use(impl);
+            forDependency(DependencyA.class).use(impl);
 
-            SutFactory.sut().doAStuff();
+            sut().doAStuff();
             BDDMockito.then(runnable).should(ReceivedOnce).run();
 
-            Object actual = SutFactory.sut().passToDependencyA(objectPassedIn);
+            Object actual = sut().passToDependencyA(objectPassedIn);
             BDDMockito.then(function).should(ReceivedOnce).apply(objectPassedIn);
             assertThat(actual).isSameAs(objectReturned);
         }
@@ -224,11 +226,11 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             DependencyA customA = mock(DependencyA.class);
             List<DependencyB> customBs = new ArrayList<>();
 
-            SutFactory.forDependency(new TypeToken<DependencyA>() { }).use(customA);
-            SutFactory.forDependency(new TypeToken<List<DependencyB>>() { }).use(customBs);
+            forDependency(new TypeToken<DependencyA>() {}).use(customA);
+            forDependency(new TypeToken<List<DependencyB>>() {}).use(customBs);
 
-            then(SutFactory.sut().getA()).isSameAs(customA);
-            then(SutFactory.sut().getBs()).isSameAs(customBs);
+            then(sut().getA()).isSameAs(customA);
+            then(sut().getBs()).isSameAs(customBs);
         }
     }
 
@@ -241,7 +243,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             @Before
             public void setup_context()
             {
-                SutFactory.forDependency(int.class).use(integer);
+                forDependency(int.class).use(integer);
             }
 
             @Test
@@ -249,9 +251,9 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             {
                 Object input = new Object();
                 Object expected = new Object();
-                given(SutFactory.dependency(DependencyA.class).doSomething(input)).willReturn(expected);
+                given(dependency(DependencyA.class).doSomething(input)).willReturn(expected);
 
-                Object actual = SutFactory.sut().executeA(input);
+                Object actual = sut().executeA(input);
 
                 then(actual).isSameAs(expected);
             }
@@ -259,7 +261,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             @Test
             public void should_be_able_to_supply_value_for_non_mockable_dependency()
             {
-                then(SutFactory.sut().getI()).isEqualTo(integer);
+                then(sut().getI()).isEqualTo(integer);
             }
         }
 
@@ -268,7 +270,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             @Test
             public void should_be_able_to_mock_and_execute_mockable_dependency()
             {
-                thenThrownBy(() -> SutFactory.createSut()).isInstanceOf(IllegalArgumentException.class);
+                thenThrownBy(() -> createSut()).isInstanceOf(IllegalArgumentException.class);
             }
         }
     }
@@ -286,7 +288,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_thrown_exception_on_non_dependency()
         {
-            thenThrownBy(() -> SutFactory.forDependencies(boolean.class).use(true, false)).isInstanceOf(UnsupportedOperationException.class);
+            thenThrownBy(() -> forDependencies(boolean.class).use(true, false)).isInstanceOf(UnsupportedOperationException.class);
         }
 
         public static class AndDependencyListIsLessThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
@@ -294,13 +296,13 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             @Test
             public void should_throw_exception_for_String()
             {
-                thenThrownBy(() -> SutFactory.forDependencies(String.class).use(str1, str2)).isInstanceOf(IllegalArgumentException.class);
+                thenThrownBy(() -> forDependencies(String.class).use(str1, str2)).isInstanceOf(IllegalArgumentException.class);
             }
 
             @Test
             public void should_throw_exception_for_int()
             {
-                thenThrownBy(() -> SutFactory.forDependencies(int.class).use(int1, int2)).isInstanceOf(IllegalArgumentException.class);
+                thenThrownBy(() -> forDependencies(int.class).use(int1, int2)).isInstanceOf(IllegalArgumentException.class);
             }
         }
 
@@ -309,20 +311,20 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             @Before
             public void setup_context()
             {
-                SutFactory.forDependencies(String.class).use(str1, str2, str3);
-                SutFactory.forDependencies(int.class).use(int1, int2, int3);
+                forDependencies(String.class).use(str1, str2, str3);
+                forDependencies(int.class).use(int1, int2, int3);
             }
 
             @Test
             public void should_be_able_to_supply_it_with_a_list_of_String_values()
             {
-                then(SutFactory.sut().getStrings()).containsExactly(str1, str2, str3);
+                then(sut().getStrings()).containsExactly(str1, str2, str3);
             }
 
             @Test
             public void should_be_able_to_supply_it_with_a_list_of_int_values()
             {
-                then(SutFactory.sut().getInts()).containsExactly(int1, int2, int3);
+                then(sut().getInts()).containsExactly(int1, int2, int3);
             }
 
             @Test
@@ -330,9 +332,9 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             {
                 Object input = new Object();
                 Object expected = new Object();
-                given(SutFactory.dependency(DependencyA.class).doSomething(input)).willReturn(expected);
+                given(dependency(DependencyA.class).doSomething(input)).willReturn(expected);
 
-                then(SutFactory.sut().executeA(input)).isSameAs(expected);
+                then(sut().executeA(input)).isSameAs(expected);
             }
         }
 
@@ -341,13 +343,13 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             @Test
             public void should_throw_exception_for_String()
             {
-                thenThrownBy(() -> SutFactory.forDependencies(String.class).use(str1, str2, str3, "four")).isInstanceOf(IllegalArgumentException.class);
+                thenThrownBy(() -> forDependencies(String.class).use(str1, str2, str3, "four")).isInstanceOf(IllegalArgumentException.class);
             }
 
             @Test
             public void should_throw_exception_for_int()
             {
-                thenThrownBy(() -> SutFactory.forDependencies(int.class).use(int1, int2, int3, 4)).isInstanceOf(IllegalArgumentException.class);
+                thenThrownBy(() -> forDependencies(int.class).use(int1, int2, int3, 4)).isInstanceOf(IllegalArgumentException.class);
             }
         }
     }

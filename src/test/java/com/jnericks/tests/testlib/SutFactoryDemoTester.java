@@ -1,6 +1,7 @@
 package com.jnericks.tests.testlib;
 
 import com.jnericks.testlib.BaseUnitTesterWithSut;
+
 import org.junit.Test;
 
 import static org.mockito.BDDMockito.given;
@@ -34,9 +35,9 @@ public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTe
 
         ILogMessages fakeLogger = mock(ILogMessages.class);
 
-        given(SutFactory.dependency(ICreateLogger.class).create(appId)).willReturn(fakeLogger);
+        given(dependency(ICreateLogger.class).create(appId)).willReturn(fakeLogger);
 
-        SutFactory.sut().logClientMessage(appId, message);
+        sut().logClientMessage(appId, message);
 
         then(fakeLogger).should(ReceivedOnce).info(message);
     }
