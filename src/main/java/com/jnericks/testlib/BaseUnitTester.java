@@ -28,8 +28,8 @@ public abstract class BaseUnitTester
     /**
      * Creates a mock object that supports mocking of final and native methods.
      *
-     * @param <T>  the type of the mock object
      * @param type the type of the mock object
+     * @param <T>  the type of the mock object
      * @return the mock object.
      */
     protected static <T> T an(Class<T> type)
@@ -40,8 +40,8 @@ public abstract class BaseUnitTester
     /**
      * Creates a mock object that supports mocking of final and native methods.
      *
-     * @param <T>       the type of the mock object
      * @param typeToken the type token of the mock object
+     * @param <T>       the type of the mock object
      * @return the mock object.
      */
     public static <T> T an(TypeToken<T> typeToken)
