@@ -9,6 +9,24 @@ import static org.mockito.BDDMockito.given;
 
 public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitTesterWithSutTester.TheClassToTest>
 {
+    @Test
+    public void should_be_able_to_mock_and_assert_from_outer_class()
+    {
+        int input = 22;
+        String output = "hello";
+
+        given(dependency(Dependency.class).toString(input)).willReturn(output);
+
+        String actual = sut().execute(input);
+
+        assertThat(actual).isEqualTo(output);
+    }
+
+    public interface Dependency
+    {
+        String toString(int i);
+    }
+
     public static class InheritedInnerTester extends BaseUnitTesterWithSutTester
     {
         @Test
@@ -71,24 +89,6 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
                 assertThat(actual).isEqualTo(output);
             }
         }
-    }
-
-    @Test
-    public void should_be_able_to_mock_and_assert_from_outer_class()
-    {
-        int input = 22;
-        String output = "hello";
-
-        given(dependency(Dependency.class).toString(input)).willReturn(output);
-
-        String actual = sut().execute(input);
-
-        assertThat(actual).isEqualTo(output);
-    }
-
-    public interface Dependency
-    {
-        String toString(int i);
     }
 
     public class TheClassToTest

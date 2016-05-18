@@ -2,22 +2,24 @@ package com.jnericks.testlib;
 
 import com.google.common.reflect.TypeToken;
 
-public class Dependency<TDependency>
-{
-    public final TypeToken<TDependency> typeToken;
-    private TDependency object;
+import org.powermock.api.mockito.PowerMockito;
 
-    Dependency(TypeToken<TDependency> typeToken)
+public class Dependency<T>
+{
+    public final TypeToken<T> typeToken;
+    private T object;
+
+    Dependency(TypeToken<T> typeToken)
     {
         this.typeToken = typeToken;
     }
 
-    public TDependency get()
+    public T get()
     {
         try
         {
             if (object == null)
-                object = Mocks.mock(typeToken);
+                object = PowerMockito.mock((Class<T>) typeToken.getRawType());
         }
         catch (IllegalArgumentException e)
         {
@@ -27,7 +29,7 @@ public class Dependency<TDependency>
         return object;
     }
 
-    public void set(TDependency dependency)
+    public void set(T dependency)
     {
         this.object = dependency;
     }

@@ -16,8 +16,8 @@ public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTe
         String appId = "an app id";
         String message = "a message";
 
-        ICreateLogger fakeLoggerFactory = mock(ICreateLogger.class);
-        ILogMessages fakeLogger = mock(ILogMessages.class);
+        ICreateLogger fakeLoggerFactory = fake(ICreateLogger.class);
+        ILogMessages fakeLogger = fake(ILogMessages.class);
 
         given(fakeLoggerFactory.create(appId)).willReturn(fakeLogger);
 
@@ -33,7 +33,7 @@ public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTe
         String appId = "an app id";
         String message = "a message";
 
-        ILogMessages fakeLogger = mock(ILogMessages.class);
+        ILogMessages fakeLogger = fake(ILogMessages.class);
 
         given(dependency(ICreateLogger.class).create(appId)).willReturn(fakeLogger);
 

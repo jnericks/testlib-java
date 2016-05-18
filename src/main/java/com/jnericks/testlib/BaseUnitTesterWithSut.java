@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
 {
-    protected SystemUnderTestFactory<TSut> sutFactory;
+    private SystemUnderTestFactory<TSut> sutFactory;
 
     @Before
     public void createSutFactory()
@@ -23,7 +23,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     /**
      * Allows you to supply your own factory to create the system under test.
      *
-     * @param sutFactory
+     * Note: redirects call to underlying SystemUnderTestFactory
      */
     protected void createSutUsing(Supplier<TSut> sutFactory)
     {
@@ -32,6 +32,8 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
 
     /**
      * Runs just before the system under test is created.
+     *
+     * Note: redirects call to underlying SystemUnderTestFactory
      *
      * @param preProcessor runnable to execute before system under test is created
      */
@@ -43,6 +45,8 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     /**
      * Runs right after the system under test is created.
      *
+     * Note: redirects call to underlying SystemUnderTestFactory
+     *
      * @param postProcessor consumer which has access to the system under test just created
      */
     protected void afterSutCreated(Consumer<TSut> postProcessor)
@@ -52,6 +56,8 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
 
     /**
      * Initiates the creation of the system under test without returning it.
+     *
+     * Note: redirects call to underlying SystemUnderTestFactory
      */
     protected void createSut()
     {
@@ -59,7 +65,10 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     }
 
     /**
-     * Initiates the creation of the system under test and returns it.
+     * Initiates the creation of the system under test and returns it. Successive calls do not
+     * re-create the system under test, it will return the one already created by the first call.
+     *
+     * Note: redirects call to underlying SystemUnderTestFactory
      *
      * @return the system under test.
      */
@@ -69,19 +78,24 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     }
 
     /**
-     * Gives access to the mock object created for each constructor based dependency of the system under test.
+     * Gives access to the fake object created for each constructor based dependency of the system
+     * under test.
      *
-     * @param dependencyClass the type of the dependency
+     * Note: redirects call to underlying SystemUnderTestFactory
+     *
+     * @param type            the type of the dependency
      * @param <TDependency>   the type of the dependency
      * @return the dependency
      */
-    protected <TDependency> TDependency dependency(Class<TDependency> dependencyClass)
+    protected <TDependency> TDependency dependency(Class<TDependency> type)
     {
-        return sutFactory.dependency(dependencyClass);
+        return sutFactory.dependency(type);
     }
 
     /**
      * Allows you to supply your own dependency for a given type
+     *
+     * Note: redirects call to underlying SystemUnderTestFactory
      *
      * @param type          the type of the dependency
      * @param <TDependency> the type of the dependency
@@ -95,6 +109,8 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     /**
      * Allows you to supply your own dependency for a given type token
      *
+     * Note: redirects call to underlying SystemUnderTestFactory
+     *
      * @param typeToken     the type token of the dependency
      * @param <TDependency> the type of the dependency
      * @return object that allows you to supply your own dependency
@@ -105,8 +121,10 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     }
 
     /**
-     * Allows you to supply your own set of dependencies for a given type.
-     * Use for when there are multiple dependencies with the same type.
+     * Allows you to supply your own set of dependencies for a given type. Useful for when there are
+     * multiple dependencies with the same type.
+     *
+     * Note: redirects call to underlying SystemUnderTestFactory
      *
      * @param type          the type of the dependencies
      * @param <TDependency> the type of the dependencies
@@ -118,8 +136,10 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
     }
 
     /**
-     * Allows you to supply your own set of dependencies for a given type token.
-     * Use for when there are multiple dependencies with the same type.
+     * Allows you to supply your own set of dependencies for a given type token. Useful for when
+     * there are multiple dependencies with the same type.
+     *
+     * Note: redirects call to underlying SystemUnderTestFactory
      *
      * @param typeToken     the type token of the dependencies
      * @param <TDependency> the type of the dependencies

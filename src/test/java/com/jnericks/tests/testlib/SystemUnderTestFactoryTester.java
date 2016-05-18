@@ -34,18 +34,10 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
 {
     public static class WhenSystemIsBasic extends BaseUnitTesterWithSut<SystemForTest>
     {
-        @Before
-        public void setup_context()
-        {
-            sutFactory = new SystemUnderTestFactory<>(SystemForTest.class);
-        }
-
         @Test
         public void should_be_able_to_create_sut()
         {
-            SystemForTest sut = sut();
-
-            assertThat(sut).isExactlyInstanceOf(SystemForTest.class);
+            assertThat(sut()).isExactlyInstanceOf(SystemForTest.class);
         }
 
         @Test
@@ -105,7 +97,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_retrieve_injected_substitute()
         {
-            DependencyA myDependencyA = mock(DependencyA.class);
+            DependencyA myDependencyA = fake(DependencyA.class);
             forDependency(DependencyA.class).use(myDependencyA);
 
             assertThat(dependency(DependencyA.class)).isSameAs(myDependencyA);
@@ -114,7 +106,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_assert_on_injected_substitute()
         {
-            DependencyA myDependencyA = mock(DependencyA.class);
+            DependencyA myDependencyA = fake(DependencyA.class);
             forDependency(DependencyA.class).use(myDependencyA);
             sut().doAStuff();
 
@@ -124,7 +116,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_throw_exception_when_configuring_an_object_that_is_NOT_a_dependency()
         {
-            assertThatThrownBy(() -> forDependency(NotADependency.class).use(mock(NotADependency.class)))
+            assertThatThrownBy(() -> forDependency(NotADependency.class).use(fake(NotADependency.class)))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
@@ -152,7 +144,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_override_internal_sut_factory()
         {
-            SystemForTest system = mock(SystemForTest.class);
+            SystemForTest system = fake(SystemForTest.class);
             createSutUsing(() -> system);
             assertThat(sut()).isSameAs(system);
         }
@@ -160,7 +152,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_add_a_pre_processor()
         {
-            Runnable runnable = mock(Runnable.class);
+            Runnable runnable = fake(Runnable.class);
 
             beforeSutCreated(runnable);
             createSut();
@@ -171,7 +163,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_add_a_post_processor()
         {
-            Consumer<SystemForTest> consumer = mock(Consumer.class);
+            Consumer<SystemForTest> consumer = fake(Consumer.class);
 
             afterSutCreated(consumer);
             createSut();
@@ -182,8 +174,8 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_add_pre_and_post_processors_to_custom_sut_creation()
         {
-            Runnable runnable = mock(Runnable.class);
-            Consumer<SystemForTest> consumer = mock(Consumer.class);
+            Runnable runnable = fake(Runnable.class);
+            Consumer<SystemForTest> consumer = fake(Consumer.class);
 
             beforeSutCreated(runnable);
             afterSutCreated(consumer);
@@ -201,8 +193,8 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             Object objectPassedIn = new Object();
             Object objectReturned = new Object();
 
-            Runnable runnable = mock(Runnable.class);
-            Function<Object, Object> function = mock(Function.class);
+            Runnable runnable = fake(Runnable.class);
+            Function<Object, Object> function = fake(Function.class);
             given(function.apply(objectPassedIn)).willReturn(objectReturned);
 
             DependencyA impl = new DependencyAImpl(runnable, function);
@@ -223,7 +215,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         @Test
         public void should_be_able_to_override_generic_dependency()
         {
-            DependencyA customA = mock(DependencyA.class);
+            DependencyA customA = fake(DependencyA.class);
             List<DependencyB> customBs = new ArrayList<>();
 
             forDependency(new TypeToken<DependencyA>() {}).use(customA);
@@ -247,7 +239,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             }
 
             @Test
-            public void should_be_able_to_mock_and_execute_mockable_dependency()
+            public void should_be_able_to_mock_and_execute_fakeable_dependency()
             {
                 Object input = new Object();
                 Object expected = new Object();
@@ -259,7 +251,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             }
 
             @Test
-            public void should_be_able_to_supply_value_for_non_mockable_dependency()
+            public void should_be_able_to_supply_value_for_non_fakeable_dependency()
             {
                 then(sut().getI()).isEqualTo(integer);
             }
@@ -268,7 +260,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         public static class AndPrimitiveDependencyIsNotSupplied extends WhenSystemHasPrimitiveDependency
         {
             @Test
-            public void should_be_able_to_mock_and_execute_mockable_dependency()
+            public void should_be_able_to_mock_and_execute_fakeable_dependency()
             {
                 thenThrownBy(() -> createSut()).isInstanceOf(IllegalArgumentException.class);
             }
@@ -328,7 +320,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             }
 
             @Test
-            public void should_still_have_generated_mock_for_dependency()
+            public void should_still_have_generated_fake_for_dependency()
             {
                 Object input = new Object();
                 Object expected = new Object();

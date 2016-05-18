@@ -3,10 +3,10 @@ package com.jnericks.testlib;
 import com.google.common.reflect.TypeToken;
 
 import org.mockito.verification.VerificationMode;
+import org.powermock.api.mockito.PowerMockito;
 
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
 public abstract class BaseUnitTester
 {
@@ -26,26 +26,26 @@ public abstract class BaseUnitTester
     protected static final VerificationMode ReceiveAtLeastOnce = atLeastOnce();
 
     /**
-     * Creates a mock object that supports mocking of final and native methods.
+     * Creates a fake object that supports stubbing/mocking of final and native methods using PowerMockito.
      *
-     * @param type the type of the mock object
-     * @param <T>  the type of the mock object
-     * @return the mock object.
+     * @param type the type of the fake object
+     * @param <T>  the type of the fake object
+     * @return the fake object.
      */
-    protected static <T> T an(Class<T> type)
+    protected static <T> T fake(Class<T> type)
     {
-        return mock(type);
+        return PowerMockito.mock(type);
     }
 
     /**
-     * Creates a mock object that supports mocking of final and native methods.
+     * Creates a fake object that supports stubbing/mocking of final and native methods using PowerMockito.
      *
-     * @param typeToken the type token of the mock object
-     * @param <T>       the type of the mock object
-     * @return the mock object.
+     * @param typeToken the type token of the fake object
+     * @param <T>       the type of the fake object
+     * @return the fake object.
      */
-    public static <T> T an(TypeToken<T> typeToken)
+    public static <T> T fake(TypeToken<T> typeToken)
     {
-        return mock((Class<T>) typeToken.getRawType());
+        return PowerMockito.mock((Class<T>) typeToken.getRawType());
     }
 }

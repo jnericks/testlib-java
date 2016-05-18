@@ -6,7 +6,9 @@ import java.lang.reflect.Constructor;
 
 public final class TestUtils
 {
-    private TestUtils() { }
+    private TestUtils()
+    {
+    }
 
     public static <T> Constructor<T> getGreediestCtor(Class<T> aClass)
     {
