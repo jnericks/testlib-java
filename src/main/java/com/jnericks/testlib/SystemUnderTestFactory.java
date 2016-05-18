@@ -109,8 +109,8 @@ public class SystemUnderTestFactory<TSut>
      * Gives access to the fake object created for each constructor based dependency of the system
      * under test.
      *
-     * @param type            the type of the dependency
-     * @param <TDependency>   the type of the dependency
+     * @param type          the type of the dependency
+     * @param <TDependency> the type of the dependency
      * @return the dependency
      */
     public <TDependency> TDependency dependency(Class<TDependency> type)
@@ -124,6 +124,27 @@ public class SystemUnderTestFactory<TSut>
         }
 
         throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", type.getSimpleName(), _typeToken.getRawType().getSimpleName()));
+    }
+
+    /**
+     * Gives access to the fake object created for each constructor based dependency of the system
+     * under test.
+     *
+     * @param typeToken     the type token of the dependency
+     * @param <TDependency> the type of the dependency
+     * @return the dependency
+     */
+    public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken)
+    {
+        for (Dependency d : _dependencies)
+        {
+            if (d.typeToken.equals(typeToken))
+            {
+                return (TDependency) d.get();
+            }
+        }
+
+        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
     }
 
     /**

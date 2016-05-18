@@ -83,13 +83,26 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      *
      * Note: redirects call to underlying SystemUnderTestFactory
      *
-     * @param type            the type of the dependency
-     * @param <TDependency>   the type of the dependency
+     * @param type          the type of the dependency
+     * @param <TDependency> the type of the dependency
      * @return the dependency
      */
     protected <TDependency> TDependency dependency(Class<TDependency> type)
     {
         return sutFactory.dependency(type);
+    }
+
+    /**
+     * Gives access to the fake object created for each constructor based dependency of the system
+     * under test.
+     *
+     * @param typeToken     the type token of the dependency
+     * @param <TDependency> the type of the dependency
+     * @return the dependency
+     */
+    public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken)
+    {
+        return sutFactory.dependency(typeToken);
     }
 
     /**

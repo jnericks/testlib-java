@@ -4,7 +4,6 @@ import com.google.common.reflect.TypeToken;
 
 import com.jnericks.testlib.BaseUnitTester;
 import com.jnericks.testlib.BaseUnitTesterWithSut;
-import com.jnericks.testlib.SystemUnderTestFactory;
 import com.jnericks.tests.testlib.TestObjects.DependencyA;
 import com.jnericks.tests.testlib.TestObjects.DependencyAImpl;
 import com.jnericks.tests.testlib.TestObjects.DependencyB;
@@ -28,7 +27,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
 public class SystemUnderTestFactoryTester extends BaseUnitTester
 {
@@ -213,15 +211,35 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
     public static class WhenSystemHasGenericDependencies extends BaseUnitTesterWithSut<SystemWithGenericDependencies>
     {
         @Test
+        public void should_be_able_to_access_and_stub_generic_dependency()
+        {
+            Object withThis = new Object();
+            Object o = new Object();
+            DependencyA fakeA = fake(DependencyA.class);
+            DependencyB fakeB = fake(DependencyB.class);
+
+            given(dependency(new TypeToken<DependencyA>() {}).doSomething(withThis)).willReturn(o);
+            given(dependency(new TypeToken<List<DependencyA>>() {}).get(0)).willReturn(fakeA);
+            given(dependency(new TypeToken<List<DependencyB>>() {}).get(0)).willReturn(fakeB);
+
+            then(sut().getA().doSomething(withThis)).isSameAs(o);
+            then(sut().getAs().get(0)).isSameAs(fakeA);
+            then(sut().getBs().get(0)).isSameAs(fakeB);
+        }
+
+        @Test
         public void should_be_able_to_override_generic_dependency()
         {
             DependencyA customA = fake(DependencyA.class);
+            List<DependencyA> customAs = new ArrayList<>();
             List<DependencyB> customBs = new ArrayList<>();
 
             forDependency(new TypeToken<DependencyA>() {}).use(customA);
+            forDependency(new TypeToken<List<DependencyA>>() {}).use(customAs);
             forDependency(new TypeToken<List<DependencyB>>() {}).use(customBs);
 
             then(sut().getA()).isSameAs(customA);
+            then(sut().getAs()).isSameAs(customAs);
             then(sut().getBs()).isSameAs(customBs);
         }
     }
