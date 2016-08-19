@@ -11,28 +11,33 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class SystemUnderTestFactory<TSut>
-{
+public class SystemUnderTestFactory<TSut> {
+
     private final TypeToken<TSut> _typeToken;
     private volatile Constructor<?> _ctor;
 
     private List<Dependency> _dependencies;
     private TSut _sut;
 
-    private Runnable _preProcessor;
-    private Supplier<TSut> _sutFactory;
-    private Consumer<TSut> _postProcessor;
+    private Runnable _preProcessor = () -> {};
+    private Consumer<TSut> _postProcessor = sut -> {};
 
-    public SystemUnderTestFactory(Class<TSut> type)
-    {
+    private Supplier<TSut> _sutFactory = () -> {
+        try {
+            return (TSut)_ctor.newInstance(_dependencies.stream().map(Dependency::get).toArray());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    };
+
+    public SystemUnderTestFactory(Class<TSut> type) {
         _typeToken = TypeToken.of(type);
 
         _dependencies = new ArrayList<>();
         _ctor = TestUtils.getGreediestCtor(_typeToken);
 
         Type[] parameterTypes = _ctor.getGenericParameterTypes();
-        for (Type t : parameterTypes)
-        {
+        for (Type t : parameterTypes) {
             TypeToken parameterTypeToken = TypeToken.of(t);
             _dependencies.add(new Dependency<>(parameterTypeToken));
         }
@@ -40,9 +45,9 @@ public class SystemUnderTestFactory<TSut>
 
     /**
      * Allows you to supply your own factory to create the system under test.
+     * @param sutFactory a supplier that will provide your own instance of TSut, bypassing the auto-generated one
      */
-    public void createSutUsing(Supplier<TSut> sutFactory)
-    {
+    public void createSutUsing(Supplier<TSut> sutFactory) {
         _sutFactory = sutFactory;
     }
 
@@ -51,8 +56,7 @@ public class SystemUnderTestFactory<TSut>
      *
      * @param preProcessor runnable to execute before system under test is created
      */
-    public void beforeSutCreated(Runnable preProcessor)
-    {
+    public void beforeSutCreated(Runnable preProcessor) {
         _preProcessor = preProcessor;
     }
 
@@ -61,36 +65,21 @@ public class SystemUnderTestFactory<TSut>
      *
      * @param postProcessor consumer which has access to the system under test just created
      */
-    public void afterSutCreated(Consumer<TSut> postProcessor)
-    {
+    public void afterSutCreated(Consumer<TSut> postProcessor) {
         _postProcessor = postProcessor;
     }
 
     /**
      * Initiates the creation of the system under test without returning it.
      */
-    public void createSut()
-    {
-        try
-        {
-            if (_sut == null)
-            {
-                if (_preProcessor != null)
-                    _preProcessor.run();
+    public void createSut() {
+        // sut already initialized
+        if (_sut != null)
+            return;
 
-                if (_sutFactory == null)
-                    _sut = (TSut) _ctor.newInstance(_dependencies.stream().map(Dependency::get).toArray());
-                else
-                    _sut = _sutFactory.get();
-
-                if (_postProcessor != null)
-                    _postProcessor.accept(_sut);
-            }
-        }
-        catch (IllegalAccessException | InvocationTargetException | InstantiationException e)
-        {
-            throw new RuntimeException(e);
-        }
+        _preProcessor.run();
+        _sut = _sutFactory.get();
+        _postProcessor.accept(_sut);
     }
 
     /**
@@ -99,8 +88,7 @@ public class SystemUnderTestFactory<TSut>
      *
      * @return the system under test.
      */
-    public TSut sut()
-    {
+    public TSut sut() {
         createSut();
         return _sut;
     }
@@ -113,13 +101,10 @@ public class SystemUnderTestFactory<TSut>
      * @param <TDependency> the type of the dependency
      * @return the dependency
      */
-    public <TDependency> TDependency dependency(Class<TDependency> type)
-    {
-        for (Dependency d : _dependencies)
-        {
-            if (d.typeToken.isSubtypeOf(type))
-            {
-                return (TDependency) d.get();
+    public <TDependency> TDependency dependency(Class<TDependency> type) {
+        for (Dependency d : _dependencies) {
+            if (d.typeToken.isSubtypeOf(type)) {
+                return (TDependency)d.get();
             }
         }
 
@@ -134,13 +119,10 @@ public class SystemUnderTestFactory<TSut>
      * @param <TDependency> the type of the dependency
      * @return the dependency
      */
-    public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken)
-    {
-        for (Dependency d : _dependencies)
-        {
-            if (d.typeToken.equals(typeToken))
-            {
-                return (TDependency) d.get();
+    public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken) {
+        for (Dependency d : _dependencies) {
+            if (d.typeToken.equals(typeToken)) {
+                return (TDependency)d.get();
             }
         }
 
@@ -154,8 +136,7 @@ public class SystemUnderTestFactory<TSut>
      * @param <TDependency> the type of the dependency
      * @return object that allows you to supply your own dependency
      */
-    public <TDependency> DoForDependency<TDependency> forDependency(Class<TDependency> type)
-    {
+    public <TDependency> DoForDependency<TDependency> forDependency(Class<TDependency> type) {
         return forDependency(TypeToken.of(type));
     }
 
@@ -166,8 +147,7 @@ public class SystemUnderTestFactory<TSut>
      * @param <TDependency> the type of the dependency
      * @return object that allows you to supply your own dependency
      */
-    public <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken)
-    {
+    public <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken) {
         List<Dependency> dependencies = _dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
 
         if (dependencies.size() > 0)
@@ -184,8 +164,7 @@ public class SystemUnderTestFactory<TSut>
      * @param <TDependency> the type of the dependencies
      * @return object that allows you to supply your own dependencies
      */
-    public <TDependency> DoForDependencies<TDependency> forDependencies(Class<TDependency> type)
-    {
+    public <TDependency> DoForDependencies<TDependency> forDependencies(Class<TDependency> type) {
         return forDependencies(TypeToken.of(type));
     }
 
@@ -197,8 +176,7 @@ public class SystemUnderTestFactory<TSut>
      * @param <TDependency> the type of the dependencies
      * @return object that allows you to supply your own dependencies
      */
-    public <TDependency> DoForDependencies<TDependency> forDependencies(TypeToken<TDependency> typeToken)
-    {
+    public <TDependency> DoForDependencies<TDependency> forDependencies(TypeToken<TDependency> typeToken) {
         List<Dependency> dependencies = _dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
 
         if (dependencies.size() > 0)

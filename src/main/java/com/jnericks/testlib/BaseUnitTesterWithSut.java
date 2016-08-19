@@ -9,24 +9,36 @@ import java.lang.reflect.Type;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
-{
+public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester {
+
     private SystemUnderTestFactory<TSut> sutFactory;
 
     @Before
-    public void createSutFactory()
-    {
+    public void createSutFactory() {
         Class<TSut> parameterizedType = getParameterizedType();
         sutFactory = new SystemUnderTestFactory<>(parameterizedType);
     }
 
     /**
+     * Gives access to the fake object created for each constructor based dependency of the system
+     * under test.
+     *
+     * @param typeToken     the type token of the dependency
+     * @param <TDependency> the type of the dependency
+     * @return the dependency
+     */
+    public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken) {
+        return sutFactory.dependency(typeToken);
+    }
+
+    /**
+     * /**
      * Allows you to supply your own factory to create the system under test.
      *
      * Note: redirects call to underlying SystemUnderTestFactory
+     * @param sutFactory a supplier that will provide your own instance of TSut, bypassing the auto-generated one
      */
-    protected void createSutUsing(Supplier<TSut> sutFactory)
-    {
+    protected void createSutUsing(Supplier<TSut> sutFactory) {
         this.sutFactory.createSutUsing(sutFactory);
     }
 
@@ -37,8 +49,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      *
      * @param preProcessor runnable to execute before system under test is created
      */
-    protected void beforeSutCreated(Runnable preProcessor)
-    {
+    protected void beforeSutCreated(Runnable preProcessor) {
         sutFactory.beforeSutCreated(preProcessor);
     }
 
@@ -49,8 +60,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      *
      * @param postProcessor consumer which has access to the system under test just created
      */
-    protected void afterSutCreated(Consumer<TSut> postProcessor)
-    {
+    protected void afterSutCreated(Consumer<TSut> postProcessor) {
         sutFactory.afterSutCreated(postProcessor);
     }
 
@@ -59,8 +69,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      *
      * Note: redirects call to underlying SystemUnderTestFactory
      */
-    protected void createSut()
-    {
+    protected void createSut() {
         sutFactory.createSut();
     }
 
@@ -72,8 +81,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      *
      * @return the system under test.
      */
-    protected TSut sut()
-    {
+    protected TSut sut() {
         return sutFactory.sut();
     }
 
@@ -87,22 +95,8 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      * @param <TDependency> the type of the dependency
      * @return the dependency
      */
-    protected <TDependency> TDependency dependency(Class<TDependency> type)
-    {
+    protected <TDependency> TDependency dependency(Class<TDependency> type) {
         return sutFactory.dependency(type);
-    }
-
-    /**
-     * Gives access to the fake object created for each constructor based dependency of the system
-     * under test.
-     *
-     * @param typeToken     the type token of the dependency
-     * @param <TDependency> the type of the dependency
-     * @return the dependency
-     */
-    public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken)
-    {
-        return sutFactory.dependency(typeToken);
     }
 
     /**
@@ -114,8 +108,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      * @param <TDependency> the type of the dependency
      * @return object that allows you to supply your own dependency
      */
-    protected <TDependency> DoForDependency<TDependency> forDependency(Class<TDependency> type)
-    {
+    protected <TDependency> DoForDependency<TDependency> forDependency(Class<TDependency> type) {
         return sutFactory.forDependency(type);
     }
 
@@ -128,8 +121,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      * @param <TDependency> the type of the dependency
      * @return object that allows you to supply your own dependency
      */
-    protected <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken)
-    {
+    protected <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken) {
         return sutFactory.forDependency(typeToken);
     }
 
@@ -143,8 +135,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      * @param <TDependency> the type of the dependencies
      * @return object that allows you to supply your own dependencies
      */
-    protected <TDependency> DoForDependencies<TDependency> forDependencies(Class<TDependency> type)
-    {
+    protected <TDependency> DoForDependencies<TDependency> forDependencies(Class<TDependency> type) {
         return sutFactory.forDependencies(type);
     }
 
@@ -158,22 +149,19 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester
      * @param <TDependency> the type of the dependencies
      * @return object that allows you to supply your own dependencies
      */
-    protected <TDependency> DoForDependencies<TDependency> forDependencies(TypeToken<TDependency> typeToken)
-    {
+    protected <TDependency> DoForDependencies<TDependency> forDependencies(TypeToken<TDependency> typeToken) {
         return sutFactory.forDependencies(typeToken);
     }
 
-    private Class<TSut> getParameterizedType()
-    {
+    private Class<TSut> getParameterizedType() {
         Type type = getClass().getGenericSuperclass();
 
-        while (!(type instanceof ParameterizedType && ((ParameterizedType) type).getRawType().equals(BaseUnitTesterWithSut.class)))
-        {
-            type = ((Class<?>) type).getGenericSuperclass();
+        while (!(type instanceof ParameterizedType && ((ParameterizedType)type).getRawType().equals(BaseUnitTesterWithSut.class))) {
+            type = ((Class<?>)type).getGenericSuperclass();
         }
 
-        type = ((ParameterizedType) type).getActualTypeArguments()[0];
+        type = ((ParameterizedType)type).getActualTypeArguments()[0];
 
-        return (Class<TSut>) type;
+        return (Class<TSut>)type;
     }
 }

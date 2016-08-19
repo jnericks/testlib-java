@@ -28,19 +28,17 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 import static org.mockito.BDDMockito.given;
 
-public class SystemUnderTestFactoryTester extends BaseUnitTester
-{
-    public static class WhenSystemIsBasic extends BaseUnitTesterWithSut<SystemForTest>
-    {
+public class SystemUnderTestFactoryTester extends BaseUnitTester {
+
+    public static class WhenSystemIsBasic extends BaseUnitTesterWithSut<SystemForTest> {
+
         @Test
-        public void should_be_able_to_create_sut()
-        {
+        public void should_be_able_to_create_sut() {
             assertThat(sut()).isExactlyInstanceOf(SystemForTest.class);
         }
 
         @Test
-        public void should_have_sut_be_a_singleton()
-        {
+        public void should_have_sut_be_a_singleton() {
             SystemForTest sut1 = sut();
             SystemForTest sut2 = sut();
 
@@ -48,40 +46,35 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_have_dependency_a()
-        {
+        public void should_have_dependency_a() {
             DependencyA a = dependency(DependencyA.class);
 
             assertThat(a).isInstanceOf(DependencyA.class);
         }
 
         @Test
-        public void should_have_dependency_b()
-        {
+        public void should_have_dependency_b() {
             DependencyB a = dependency(DependencyB.class);
 
             assertThat(a).isInstanceOf(DependencyB.class);
         }
 
         @Test
-        public void should_be_able_to_do_a_stuff()
-        {
+        public void should_be_able_to_do_a_stuff() {
             sut().doAStuff();
 
             BDDMockito.then(dependency(DependencyA.class)).should(ReceivedOnce).aStuff();
         }
 
         @Test
-        public void should_be_able_to_do_b_stuff()
-        {
+        public void should_be_able_to_do_b_stuff() {
             sut().doBStuff();
 
             BDDMockito.then(dependency(DependencyB.class)).should(ReceivedOnce).bStuff();
         }
 
         @Test
-        public void should_be_able_to_stub_a_method()
-        {
+        public void should_be_able_to_stub_a_method() {
             Object objectPassedToSut = new Object();
             Object objectReturnedFromDependencyA = new Object();
 
@@ -93,8 +86,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_be_able_to_retrieve_injected_substitute()
-        {
+        public void should_be_able_to_retrieve_injected_substitute() {
             DependencyA myDependencyA = fake(DependencyA.class);
             forDependency(DependencyA.class).use(myDependencyA);
 
@@ -102,8 +94,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_be_able_to_assert_on_injected_substitute()
-        {
+        public void should_be_able_to_assert_on_injected_substitute() {
             DependencyA myDependencyA = fake(DependencyA.class);
             forDependency(DependencyA.class).use(myDependencyA);
             sut().doAStuff();
@@ -112,44 +103,38 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_throw_exception_when_configuring_an_object_that_is_NOT_a_dependency()
-        {
+        public void should_throw_exception_when_configuring_an_object_that_is_NOT_a_dependency() {
             assertThatThrownBy(() -> forDependency(NotADependency.class).use(fake(NotADependency.class)))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        public void should_throw_exception_when_configuring_an_object_with_a_TypeToken_that_is_NOT_a_dependency()
-        {
-            assertThatThrownBy(() -> forDependency(new TypeToken<List<NotADependency>>() {}).use(new ArrayList<>()))
+        public void should_throw_exception_when_configuring_an_object_with_a_TypeToken_that_is_NOT_a_dependency() {
+            assertThatThrownBy(() -> forDependency(new TypeToken<List<NotADependency>>() { }).use(new ArrayList<>()))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        public void should_throw_exception_when_retrieving_object_that_is_NOT_a_dependency()
-        {
+        public void should_throw_exception_when_retrieving_object_that_is_NOT_a_dependency() {
             assertThatThrownBy(() -> dependency(NotADependency.class))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        public void should_throw_exception_when_trying_to_retrieve_sut_from_method()
-        {
+        public void should_throw_exception_when_trying_to_retrieve_sut_from_method() {
             assertThatThrownBy(() -> dependency(SystemForTest.class))
                     .isInstanceOf(UnsupportedOperationException.class);
         }
 
         @Test
-        public void should_be_able_to_override_internal_sut_factory()
-        {
+        public void should_be_able_to_override_internal_sut_factory() {
             SystemForTest system = fake(SystemForTest.class);
             createSutUsing(() -> system);
             assertThat(sut()).isSameAs(system);
         }
 
         @Test
-        public void should_be_able_to_add_a_pre_processor()
-        {
+        public void should_be_able_to_add_a_pre_processor() {
             Runnable runnable = fake(Runnable.class);
 
             beforeSutCreated(runnable);
@@ -159,8 +144,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_be_able_to_add_a_post_processor()
-        {
+        public void should_be_able_to_add_a_post_processor() {
             Consumer<SystemForTest> consumer = fake(Consumer.class);
 
             afterSutCreated(consumer);
@@ -170,8 +154,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_be_able_to_add_pre_and_post_processors_to_custom_sut_creation()
-        {
+        public void should_be_able_to_add_pre_and_post_processors_to_custom_sut_creation() {
             Runnable runnable = fake(Runnable.class);
             Consumer<SystemForTest> consumer = fake(Consumer.class);
 
@@ -186,8 +169,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_be_able_to_swap_in_a_concrete_impl_of_a_dependency()
-        {
+        public void should_be_able_to_swap_in_a_concrete_impl_of_a_dependency() {
             Object objectPassedIn = new Object();
             Object objectReturned = new Object();
 
@@ -208,19 +190,18 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
     }
 
-    public static class WhenSystemHasGenericDependencies extends BaseUnitTesterWithSut<SystemWithGenericDependencies>
-    {
+    public static class WhenSystemHasGenericDependencies extends BaseUnitTesterWithSut<SystemWithGenericDependencies> {
+
         @Test
-        public void should_be_able_to_access_and_stub_generic_dependency()
-        {
+        public void should_be_able_to_access_and_stub_generic_dependency() {
             Object withThis = new Object();
             Object o = new Object();
             DependencyA fakeA = fake(DependencyA.class);
             DependencyB fakeB = fake(DependencyB.class);
 
-            given(dependency(new TypeToken<DependencyA>() {}).doSomething(withThis)).willReturn(o);
-            given(dependency(new TypeToken<List<DependencyA>>() {}).get(0)).willReturn(fakeA);
-            given(dependency(new TypeToken<List<DependencyB>>() {}).get(0)).willReturn(fakeB);
+            given(dependency(new TypeToken<DependencyA>() { }).doSomething(withThis)).willReturn(o);
+            given(dependency(new TypeToken<List<DependencyA>>() { }).get(0)).willReturn(fakeA);
+            given(dependency(new TypeToken<List<DependencyB>>() { }).get(0)).willReturn(fakeB);
 
             then(sut().getA().doSomething(withThis)).isSameAs(o);
             then(sut().getAs().get(0)).isSameAs(fakeA);
@@ -228,15 +209,14 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
 
         @Test
-        public void should_be_able_to_override_generic_dependency()
-        {
+        public void should_be_able_to_override_generic_dependency() {
             DependencyA customA = fake(DependencyA.class);
             List<DependencyA> customAs = new ArrayList<>();
             List<DependencyB> customBs = new ArrayList<>();
 
-            forDependency(new TypeToken<DependencyA>() {}).use(customA);
-            forDependency(new TypeToken<List<DependencyA>>() {}).use(customAs);
-            forDependency(new TypeToken<List<DependencyB>>() {}).use(customBs);
+            forDependency(new TypeToken<DependencyA>() { }).use(customA);
+            forDependency(new TypeToken<List<DependencyA>>() { }).use(customAs);
+            forDependency(new TypeToken<List<DependencyB>>() { }).use(customBs);
 
             then(sut().getA()).isSameAs(customA);
             then(sut().getAs()).isSameAs(customAs);
@@ -244,21 +224,19 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         }
     }
 
-    public static class WhenSystemHasPrimitiveDependency extends BaseUnitTesterWithSut<SystemWithPrimitives>
-    {
-        public static class AndPrimitiveDependencyIsSupplied extends WhenSystemHasPrimitiveDependency
-        {
+    public static class WhenSystemHasPrimitiveDependency extends BaseUnitTesterWithSut<SystemWithPrimitives> {
+
+        public static class AndPrimitiveDependencyIsSupplied extends WhenSystemHasPrimitiveDependency {
+
             protected int integer = 12;
 
             @Before
-            public void setup_context()
-            {
+            public void setup_context() {
                 forDependency(int.class).use(integer);
             }
 
             @Test
-            public void should_be_able_to_mock_and_execute_fakeable_dependency()
-            {
+            public void should_be_able_to_mock_and_execute_fakeable_dependency() {
                 Object input = new Object();
                 Object expected = new Object();
                 given(dependency(DependencyA.class).doSomething(input)).willReturn(expected);
@@ -269,24 +247,22 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             }
 
             @Test
-            public void should_be_able_to_supply_value_for_non_fakeable_dependency()
-            {
+            public void should_be_able_to_supply_value_for_non_fakeable_dependency() {
                 then(sut().getI()).isEqualTo(integer);
             }
         }
 
-        public static class AndPrimitiveDependencyIsNotSupplied extends WhenSystemHasPrimitiveDependency
-        {
+        public static class AndPrimitiveDependencyIsNotSupplied extends WhenSystemHasPrimitiveDependency {
+
             @Test
-            public void should_be_able_to_mock_and_execute_fakeable_dependency()
-            {
+            public void should_be_able_to_mock_and_execute_fakeable_dependency() {
                 thenThrownBy(() -> createSut()).isInstanceOf(IllegalArgumentException.class);
             }
         }
     }
 
-    public static class WhenSystemHasMultipleDependenciesOfTheSameType extends BaseUnitTesterWithSut<SystemWithMultipleStringAndIntDependencies>
-    {
+    public static class WhenSystemHasMultipleDependenciesOfTheSameType extends BaseUnitTesterWithSut<SystemWithMultipleStringAndIntDependencies> {
+
         protected String str1 = "one";
         protected String str2 = "two";
         protected String str3 = "three";
@@ -296,50 +272,43 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
         protected int int3 = 3;
 
         @Test
-        public void should_thrown_exception_on_non_dependency()
-        {
+        public void should_thrown_exception_on_non_dependency() {
             thenThrownBy(() -> forDependencies(boolean.class).use(true, false)).isInstanceOf(UnsupportedOperationException.class);
         }
 
-        public static class AndDependencyListIsLessThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
-        {
+        public static class AndDependencyListIsLessThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType {
+
             @Test
-            public void should_throw_exception_for_String()
-            {
+            public void should_throw_exception_for_String() {
                 thenThrownBy(() -> forDependencies(String.class).use(str1, str2)).isInstanceOf(IllegalArgumentException.class);
             }
 
             @Test
-            public void should_throw_exception_for_int()
-            {
+            public void should_throw_exception_for_int() {
                 thenThrownBy(() -> forDependencies(int.class).use(int1, int2)).isInstanceOf(IllegalArgumentException.class);
             }
         }
 
-        public static class AndDependencyListIsEqualToCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
-        {
+        public static class AndDependencyListIsEqualToCtor extends WhenSystemHasMultipleDependenciesOfTheSameType {
+
             @Before
-            public void setup_context()
-            {
+            public void setup_context() {
                 forDependencies(String.class).use(str1, str2, str3);
                 forDependencies(int.class).use(int1, int2, int3);
             }
 
             @Test
-            public void should_be_able_to_supply_it_with_a_list_of_String_values()
-            {
+            public void should_be_able_to_supply_it_with_a_list_of_String_values() {
                 then(sut().getStrings()).containsExactly(str1, str2, str3);
             }
 
             @Test
-            public void should_be_able_to_supply_it_with_a_list_of_int_values()
-            {
+            public void should_be_able_to_supply_it_with_a_list_of_int_values() {
                 then(sut().getInts()).containsExactly(int1, int2, int3);
             }
 
             @Test
-            public void should_still_have_generated_fake_for_dependency()
-            {
+            public void should_still_have_generated_fake_for_dependency() {
                 Object input = new Object();
                 Object expected = new Object();
                 given(dependency(DependencyA.class).doSomething(input)).willReturn(expected);
@@ -348,17 +317,15 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester
             }
         }
 
-        public static class AndDependencyListIsGreaterThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType
-        {
+        public static class AndDependencyListIsGreaterThanCtor extends WhenSystemHasMultipleDependenciesOfTheSameType {
+
             @Test
-            public void should_throw_exception_for_String()
-            {
+            public void should_throw_exception_for_String() {
                 thenThrownBy(() -> forDependencies(String.class).use(str1, str2, str3, "four")).isInstanceOf(IllegalArgumentException.class);
             }
 
             @Test
-            public void should_throw_exception_for_int()
-            {
+            public void should_throw_exception_for_int() {
                 thenThrownBy(() -> forDependencies(int.class).use(int1, int2, int3, 4)).isInstanceOf(IllegalArgumentException.class);
             }
         }

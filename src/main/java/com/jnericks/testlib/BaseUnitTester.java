@@ -8,8 +8,8 @@ import org.powermock.api.mockito.PowerMockito;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 
-public abstract class BaseUnitTester
-{
+public abstract class BaseUnitTester {
+
     /**
      * Verifying exactly 0 invocations
      */
@@ -26,26 +26,26 @@ public abstract class BaseUnitTester
     protected static final VerificationMode ReceiveAtLeastOnce = atLeastOnce();
 
     /**
-     * Creates a fake object that supports stubbing/mocking of final and native methods using PowerMockito.
-     *
-     * @param type the type of the fake object
-     * @param <T>  the type of the fake object
-     * @return the fake object.
-     */
-    protected static <T> T fake(Class<T> type)
-    {
-        return PowerMockito.mock(type);
-    }
-
-    /**
-     * Creates a fake object that supports stubbing/mocking of final and native methods using PowerMockito.
+     * Creates a fake object that supports stubbing/mocking of final and native methods using
+     * PowerMockito.
      *
      * @param typeToken the type token of the fake object
      * @param <T>       the type of the fake object
      * @return the fake object.
      */
-    public static <T> T fake(TypeToken<T> typeToken)
-    {
-        return PowerMockito.mock((Class<T>) typeToken.getRawType());
+    public static <T> T fake(TypeToken<T> typeToken) {
+        return PowerMockito.mock((Class<T>)typeToken.getRawType());
+    }
+
+    /**
+     * Creates a fake object that supports stubbing/mocking of final and native methods using
+     * PowerMockito.
+     *
+     * @param type the type of the fake object
+     * @param <T>  the type of the fake object
+     * @return the fake object.
+     */
+    protected static <T> T fake(Class<T> type) {
+        return PowerMockito.mock(type);
     }
 }

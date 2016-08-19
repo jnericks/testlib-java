@@ -6,13 +6,11 @@ import org.junit.Test;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
-public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTester.ClientLogger>
-{
+public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTester.ClientLogger> {
+
     @Test
-    public void should_log_client_message()
-    {
+    public void should_log_client_message() {
         String appId = "an app id";
         String message = "a message";
 
@@ -28,8 +26,7 @@ public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTe
     }
 
     @Test
-    public void should_log_client_message_using_sut_factory()
-    {
+    public void should_log_client_message_using_sut_factory() {
         String appId = "an app id";
         String message = "a message";
 
@@ -42,27 +39,25 @@ public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTe
         then(fakeLogger).should(ReceivedOnce).info(message);
     }
 
-    public interface ILogMessages
-    {
+    public interface ILogMessages {
+
         void info(String message);
     }
 
-    public interface ICreateLogger
-    {
+    public interface ICreateLogger {
+
         ILogMessages create(String appId);
     }
 
-    public class ClientLogger
-    {
+    public class ClientLogger {
+
         private ICreateLogger _loggerFactory;
 
-        public ClientLogger(ICreateLogger loggerFactory)
-        {
+        public ClientLogger(ICreateLogger loggerFactory) {
             _loggerFactory = loggerFactory;
         }
 
-        public void logClientMessage(String appId, String message)
-        {
+        public void logClientMessage(String appId, String message) {
             ILogMessages logger = _loggerFactory.create(appId);
             logger.info(message);
         }
