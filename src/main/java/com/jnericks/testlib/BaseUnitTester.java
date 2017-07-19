@@ -27,7 +27,7 @@ public abstract class BaseUnitTester {
 
     /**
      * Creates a fake object that supports stubbing/mocking of final and native methods using
-     * PowerMockito.
+     * Mockito.
      *
      * @param typeToken the type token of the fake object
      * @param <T>       the type of the fake object
@@ -39,7 +39,7 @@ public abstract class BaseUnitTester {
 
     /**
      * Creates a fake object that supports stubbing/mocking of final and native methods using
-     * PowerMockito.
+     * Mockito.
      *
      * @param type the type of the fake object
      * @param <T>  the type of the fake object

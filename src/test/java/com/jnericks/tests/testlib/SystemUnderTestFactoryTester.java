@@ -146,7 +146,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester {
 
         @Test
         public void should_be_able_to_add_a_post_processor() {
-            Consumer<SystemForTest> consumer = fake(Consumer.class);
+            Consumer<SystemForTest> consumer = fake(new TypeToken<Consumer<SystemForTest>>() { });
 
             afterSutCreated(consumer);
             createSut();
@@ -157,7 +157,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester {
         @Test
         public void should_be_able_to_add_pre_and_post_processors_to_custom_sut_creation() {
             Runnable runnable = fake(Runnable.class);
-            Consumer<SystemForTest> consumer = fake(Consumer.class);
+            Consumer<SystemForTest> consumer = fake(new TypeToken<Consumer<SystemForTest>>() { });
 
             beforeSutCreated(runnable);
             afterSutCreated(consumer);
@@ -175,7 +175,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester {
             Object objectReturned = new Object();
 
             Runnable runnable = fake(Runnable.class);
-            Function<Object, Object> function = fake(Function.class);
+            Function<Object, Object> function = fake(new TypeToken<Function<Object, Object>>() { });
             given(function.apply(objectPassedIn)).willReturn(objectReturned);
 
             DependencyA impl = new DependencyAImpl(runnable, function);
