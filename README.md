@@ -11,7 +11,6 @@ Dependencies
 * [Guava](https://github.com/google/guava)
 * [JUnit](http://junit.org/)
 * [Mockito](http://mockito.org/)
-* [PowerMockito](https://github.com/jayway/powermock)
 
 What is TestLib-Java?
 --------------------------------
