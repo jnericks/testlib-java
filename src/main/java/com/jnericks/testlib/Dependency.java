@@ -2,7 +2,7 @@ package com.jnericks.testlib;
 
 import com.google.common.reflect.TypeToken;
 
-import org.powermock.api.mockito.PowerMockito;
+import org.mockito.Mockito;
 
 public class Dependency<T> {
 
@@ -15,8 +15,10 @@ public class Dependency<T> {
 
     public T get() {
         try {
-            if (object == null)
-                object = PowerMockito.mock((Class<T>)typeToken.getRawType());
+            if (object == null) {
+                Class<T> c = (Class<T>)typeToken.getRawType();
+                object = Mockito.mock(c);
+            }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(String.format("%s. Please provide a value for this dependency.", e.getMessage()));
         }

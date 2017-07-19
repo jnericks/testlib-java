@@ -2,8 +2,8 @@ package com.jnericks.testlib;
 
 import com.google.common.reflect.TypeToken;
 
+import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
-import org.powermock.api.mockito.PowerMockito;
 
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
@@ -34,7 +34,7 @@ public abstract class BaseUnitTester {
      * @return the fake object.
      */
     public static <T> T fake(TypeToken<T> typeToken) {
-        return PowerMockito.mock((Class<T>)typeToken.getRawType());
+        return Mockito.mock((Class<T>)typeToken.getRawType());
     }
 
     /**
@@ -46,6 +46,6 @@ public abstract class BaseUnitTester {
      * @return the fake object.
      */
     protected static <T> T fake(Class<T> type) {
-        return PowerMockito.mock(type);
+        return Mockito.mock(type);
     }
 }

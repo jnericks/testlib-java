@@ -16,6 +16,7 @@ import com.jnericks.tests.testlib.TestObjects.SystemWithPrimitives;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
+import org.mockito.exceptions.base.MockitoException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -256,7 +257,7 @@ public class SystemUnderTestFactoryTester extends BaseUnitTester {
 
             @Test
             public void should_be_able_to_mock_and_execute_fakeable_dependency() {
-                thenThrownBy(() -> createSut()).isInstanceOf(IllegalArgumentException.class);
+                thenThrownBy(this::createSut).isInstanceOf(MockitoException.class);
             }
         }
     }

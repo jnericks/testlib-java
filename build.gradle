@@ -10,7 +10,7 @@ apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 
-def baseVersion = "1.2"
+def baseVersion = "2.0"
 def travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
 version = travisBuildNumber != null ? baseVersion + "." + travisBuildNumber : baseVersion
 
@@ -29,18 +29,13 @@ jar {
 }
 
 dependencies {
-    compile "com.google.guava:guava:19.0"
+    compile "com.google.guava:guava:22.0"
     compile "junit:junit:4.12"
-    compile "org.assertj:assertj-core:3.2.0"
-    compile "org.mockito:mockito-core:2.0.31-beta"
-    compile "org.powermock:powermock-module-junit4:1.6.2"
-    compile "org.powermock:powermock-api-mockito:1.6.2"
-    testCompile "com.google.guava:guava:19.0"
+    compile "org.assertj:assertj-core:3.8.0"
+    compile "org.mockito:mockito-core:2.8.47"
     testCompile "junit:junit:4.12"
-    testCompile "org.assertj:assertj-core:3.2.0"
-    testCompile "org.mockito:mockito-core:2.0.31-beta"
-    testCompile "org.powermock:powermock-module-junit4:1.6.2"
-    testCompile "org.powermock:powermock-api-mockito:1.6.2"
+    testCompile "org.assertj:assertj-core:3.8.0"
+    testCompile "org.mockito:mockito-core:2.8.47"
 }
 
 task sourcesJar(type: Jar) {
