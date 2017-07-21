@@ -2,27 +2,27 @@ package com.jnericks.tests.testlib.TestObjects;
 
 public class SystemForTest {
 
-    DependencyA _dependencyA;
-    DependencyB _dependencyB;
+    DependencyA dependencyA;
+    DependencyB dependencyB;
 
     public SystemForTest(DependencyA dependencyA, DependencyB dependencyB) {
-        _dependencyA = dependencyA;
-        _dependencyB = dependencyB;
+        this.dependencyA = dependencyA;
+        this.dependencyB = dependencyB;
     }
 
     public SystemForTest(DependencyB dependencyB) {
-        _dependencyB = dependencyB;
+        this.dependencyB = dependencyB;
     }
 
     public void doAStuff() {
-        _dependencyA.aStuff();
+        dependencyA.aStuff();
     }
 
     public Object passToDependencyA(Object o) {
-        return _dependencyA.doSomething(o);
+        return dependencyA.doSomething(o);
     }
 
     public void doBStuff() {
-        _dependencyB.bStuff();
+        dependencyB.bStuff();
     }
 }

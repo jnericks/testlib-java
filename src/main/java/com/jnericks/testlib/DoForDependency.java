@@ -4,13 +4,15 @@ import java.util.List;
 
 public class DoForDependency<TDoFor> {
 
-    private final List<Dependency> _dependencies;
+    final List<Dependency> dependencies;
 
     DoForDependency(List<Dependency> dependencies) {
-        _dependencies = dependencies;
+        this.dependencies = dependencies;
     }
 
     public void use(TDoFor dependency) {
-        _dependencies.forEach(d -> d.set(dependency));
+        for (Dependency d : dependencies) {
+            d.set(dependency);
+        }
     }
 }

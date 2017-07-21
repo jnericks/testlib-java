@@ -2,19 +2,19 @@ package com.jnericks.tests.testlib.TestObjects;
 
 public class SystemWithPrimitives {
 
-    private int _i;
-    private DependencyA _a;
+    int i;
+    DependencyA a;
 
     public SystemWithPrimitives(int i, DependencyA a) {
-        _i = i;
-        _a = a;
+        this.i = i;
+        this.a = a;
     }
 
     public int getI() {
-        return _i;
+        return i;
     }
 
     public Object executeA(Object o) {
-        return _a.doSomething(o);
+        return a.doSomething(o);
     }
 }

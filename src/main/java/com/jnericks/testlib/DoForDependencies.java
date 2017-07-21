@@ -6,10 +6,10 @@ import java.util.List;
 
 public class DoForDependencies<TDoFor> {
 
-    private final List<Dependency> _dependencies;
+    final List<Dependency> dependencies;
 
     DoForDependencies(List<Dependency> dependencies) {
-        _dependencies = dependencies;
+        this.dependencies = dependencies;
     }
 
     public void use(TDoFor... dependencies) {
@@ -17,12 +17,13 @@ public class DoForDependencies<TDoFor> {
     }
 
     public void use(List<TDoFor> dependencies) {
-        if (_dependencies.size() != dependencies.size())
-            throw new IllegalArgumentException(String.format("List of dependencies are not the same size, expecting %d, received %d", _dependencies.size(), dependencies.size()));
+        if (this.dependencies.size() != dependencies.size()) {
+            throw new IllegalArgumentException(String.format("List of dependencies are not the same size, expecting %d, received %d", this.dependencies.size(), dependencies.size()));
+        }
 
         Iterator<TDoFor> iterator = dependencies.iterator();
-        for (int i = 0; i < _dependencies.size(); i++) {
-            _dependencies.get(i).set(iterator.next());
+        for (int i = 0; i < this.dependencies.size(); i++) {
+            this.dependencies.get(i).set(iterator.next());
         }
     }
 }

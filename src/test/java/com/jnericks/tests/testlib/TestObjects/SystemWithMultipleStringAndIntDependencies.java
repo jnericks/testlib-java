@@ -2,9 +2,9 @@ package com.jnericks.tests.testlib.TestObjects;
 
 public class SystemWithMultipleStringAndIntDependencies {
 
-    private DependencyA a;
-    private String[] strings;
-    private int[] ints;
+    DependencyA a;
+    String[] strings;
+    int[] ints;
 
     public SystemWithMultipleStringAndIntDependencies(String s1, int i1, String s2, DependencyA a, int i2, String s3, int i3) {
         this.strings = new String[] { s1, s2, s3 };

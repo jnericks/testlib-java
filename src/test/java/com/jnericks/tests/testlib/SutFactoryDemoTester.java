@@ -51,14 +51,14 @@ public class SutFactoryDemoTester extends BaseUnitTesterWithSut<SutFactoryDemoTe
 
     public class ClientLogger {
 
-        private ICreateLogger _loggerFactory;
+        ICreateLogger loggerFactory;
 
         public ClientLogger(ICreateLogger loggerFactory) {
-            _loggerFactory = loggerFactory;
+            this.loggerFactory = loggerFactory;
         }
 
         public void logClientMessage(String appId, String message) {
-            ILogMessages logger = _loggerFactory.create(appId);
+            ILogMessages logger = loggerFactory.create(appId);
             logger.info(message);
         }
     }

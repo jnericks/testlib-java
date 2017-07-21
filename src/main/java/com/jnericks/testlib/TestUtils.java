@@ -6,8 +6,7 @@ import java.lang.reflect.Constructor;
 
 public final class TestUtils {
 
-    private TestUtils() {
-    }
+    TestUtils() { }
 
     public static <T> Constructor<T> getGreediestCtor(Class<T> aClass) {
         return getGreediestCtor(TypeToken.of(aClass));

@@ -88,14 +88,14 @@ public class BaseUnitTesterWithSutTester extends BaseUnitTesterWithSut<BaseUnitT
 
     public class TheClassToTest {
 
-        private Dependency _dependency;
+        Dependency dependency;
 
         public TheClassToTest(Dependency dependency) {
-            _dependency = dependency;
+            this.dependency = dependency;
         }
 
         public String execute(int i) {
-            return _dependency.toString(i);
+            return dependency.toString(i);
         }
     }
 }

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester {
 
-    private SystemUnderTestFactory<TSut> sutFactory;
+    SystemUnderTestFactory<TSut> sutFactory;
 
     @Before
     public void createSutFactory() {
@@ -32,11 +32,12 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester {
     }
 
     /**
-     * /**
-     * Allows you to supply your own factory to create the system under test.
+     * /** Allows you to supply your own factory to create the system under test.
      *
      * Note: redirects call to underlying SystemUnderTestFactory
-     * @param sutFactory a supplier that will provide your own instance of TSut, bypassing the auto-generated one
+     *
+     * @param sutFactory a supplier that will provide your own instance of TSut, bypassing the
+     *                   auto-generated one
      */
     protected void createSutUsing(Supplier<TSut> sutFactory) {
         this.sutFactory.createSutUsing(sutFactory);
@@ -153,7 +154,7 @@ public abstract class BaseUnitTesterWithSut<TSut> extends BaseUnitTester {
         return sutFactory.forDependencies(typeToken);
     }
 
-    private Class<TSut> getParameterizedType() {
+    Class<TSut> getParameterizedType() {
         Type type = getClass().getGenericSuperclass();
 
         while (!(type instanceof ParameterizedType && ((ParameterizedType)type).getRawType().equals(BaseUnitTesterWithSut.class))) {

@@ -6,8 +6,8 @@ import org.mockito.Mockito;
 
 public class Dependency<T> {
 
-    public final TypeToken<T> typeToken;
-    private T object;
+    final TypeToken<T> typeToken;
+    T dependency;
 
     Dependency(TypeToken<T> typeToken) {
         this.typeToken = typeToken;
@@ -15,18 +15,18 @@ public class Dependency<T> {
 
     public T get() {
         try {
-            if (object == null) {
-                Class<T> c = (Class<T>)typeToken.getRawType();
-                object = Mockito.mock(c);
+            // lazy load uninitialized dependency
+            if (dependency == null) {
+                dependency = Mockito.mock((Class<T>)typeToken.getRawType());
             }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(String.format("%s. Please provide a value for this dependency.", e.getMessage()));
         }
 
-        return object;
+        return dependency;
     }
 
     public void set(T dependency) {
-        this.object = dependency;
+        this.dependency = dependency;
     }
 }

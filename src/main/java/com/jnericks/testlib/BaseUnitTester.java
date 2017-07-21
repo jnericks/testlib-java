@@ -26,8 +26,7 @@ public abstract class BaseUnitTester {
     protected static final VerificationMode ReceiveAtLeastOnce = atLeastOnce();
 
     /**
-     * Creates a fake object that supports stubbing/mocking of final and native methods using
-     * Mockito.
+     * Creates a fake object that supports stubbing/mocking via Mockito.
      *
      * @param typeToken the type token of the fake object
      * @param <T>       the type of the fake object
@@ -38,8 +37,7 @@ public abstract class BaseUnitTester {
     }
 
     /**
-     * Creates a fake object that supports stubbing/mocking of final and native methods using
-     * Mockito.
+     * Creates a fake object that supports stubbing/mocking via Mockito.
      *
      * @param type the type of the fake object
      * @param <T>  the type of the fake object

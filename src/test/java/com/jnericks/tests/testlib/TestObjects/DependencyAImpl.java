@@ -4,21 +4,21 @@ import java.util.function.Function;
 
 public class DependencyAImpl implements DependencyA {
 
-    private final Runnable _aStuff;
-    private final Function<Object, Object> _doSomething;
+    Runnable aStuff;
+    Function<Object, Object> doSomething;
 
     public DependencyAImpl(Runnable aStuff, Function<Object, Object> doSomething) {
-        _aStuff = aStuff != null ? aStuff : () -> {};
-        _doSomething = doSomething != null ? doSomething : x -> null;
+        this.aStuff = aStuff != null ? aStuff : () -> {};
+        this.doSomething = doSomething != null ? doSomething : x -> null;
     }
 
     @Override
     public void aStuff() {
-        _aStuff.run();
+        aStuff.run();
     }
 
     @Override
     public Object doSomething(Object o) {
-        return _doSomething.apply(o);
+        return doSomething.apply(o);
     }
 }

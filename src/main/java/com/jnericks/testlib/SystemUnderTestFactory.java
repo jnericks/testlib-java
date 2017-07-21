@@ -11,44 +11,47 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class SystemUnderTestFactory<TSut> {
 
-    private final TypeToken<TSut> _typeToken;
-    private volatile Constructor<?> _ctor;
+    final TypeToken<TSut> sutTypeToken;
+    volatile Constructor<?> ctor;
 
-    private List<Dependency> _dependencies;
-    private TSut _sut;
+    List<Dependency> dependencies;
+    TSut systemUnderTest;
 
-    private Runnable _preProcessor = () -> {};
-    private Consumer<TSut> _postProcessor = sut -> {};
+    Runnable preProcessor = () -> {};
+    Consumer<TSut> postProcessor = sut -> {};
 
-    private Supplier<TSut> _sutFactory = () -> {
+    Supplier<TSut> sutFactory = () -> {
         try {
-            return (TSut)_ctor.newInstance(_dependencies.stream().map(Dependency::get).toArray());
+            return (TSut)ctor.newInstance(dependencies.stream().map(Dependency::get).toArray());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     };
 
     public SystemUnderTestFactory(Class<TSut> type) {
-        _typeToken = TypeToken.of(type);
+        sutTypeToken = TypeToken.of(type);
 
-        _dependencies = new ArrayList<>();
-        _ctor = TestUtils.getGreediestCtor(_typeToken);
+        dependencies = new ArrayList<>();
+        ctor = TestUtils.getGreediestCtor(sutTypeToken);
 
-        Type[] parameterTypes = _ctor.getGenericParameterTypes();
+        Type[] parameterTypes = ctor.getGenericParameterTypes();
         for (Type t : parameterTypes) {
             TypeToken parameterTypeToken = TypeToken.of(t);
-            _dependencies.add(new Dependency<>(parameterTypeToken));
+            dependencies.add(new Dependency<>(parameterTypeToken));
         }
     }
 
     /**
      * Allows you to supply your own factory to create the system under test.
-     * @param sutFactory a supplier that will provide your own instance of TSut, bypassing the auto-generated one
+     *
+     * @param sutFactory a supplier that will provide your own instance of TSut, bypassing the
+     *                   auto-generated one
      */
     public void createSutUsing(Supplier<TSut> sutFactory) {
-        _sutFactory = sutFactory;
+        this.sutFactory = sutFactory;
     }
 
     /**
@@ -57,7 +60,7 @@ public class SystemUnderTestFactory<TSut> {
      * @param preProcessor runnable to execute before system under test is created
      */
     public void beforeSutCreated(Runnable preProcessor) {
-        _preProcessor = preProcessor;
+        this.preProcessor = preProcessor;
     }
 
     /**
@@ -66,7 +69,7 @@ public class SystemUnderTestFactory<TSut> {
      * @param postProcessor consumer which has access to the system under test just created
      */
     public void afterSutCreated(Consumer<TSut> postProcessor) {
-        _postProcessor = postProcessor;
+        this.postProcessor = postProcessor;
     }
 
     /**
@@ -74,12 +77,12 @@ public class SystemUnderTestFactory<TSut> {
      */
     public void createSut() {
         // sut already initialized
-        if (_sut != null)
+        if (systemUnderTest != null)
             return;
 
-        _preProcessor.run();
-        _sut = _sutFactory.get();
-        _postProcessor.accept(_sut);
+        preProcessor.run();
+        systemUnderTest = sutFactory.get();
+        postProcessor.accept(systemUnderTest);
     }
 
     /**
@@ -90,7 +93,7 @@ public class SystemUnderTestFactory<TSut> {
      */
     public TSut sut() {
         createSut();
-        return _sut;
+        return systemUnderTest;
     }
 
     /**
@@ -102,13 +105,13 @@ public class SystemUnderTestFactory<TSut> {
      * @return the dependency
      */
     public <TDependency> TDependency dependency(Class<TDependency> type) {
-        for (Dependency d : _dependencies) {
+        for (Dependency d : dependencies) {
             if (d.typeToken.isSubtypeOf(type)) {
                 return (TDependency)d.get();
             }
         }
 
-        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", type.getSimpleName(), _typeToken.getRawType().getSimpleName()));
+        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", type.getSimpleName(), sutTypeToken.getRawType().getSimpleName()));
     }
 
     /**
@@ -120,13 +123,13 @@ public class SystemUnderTestFactory<TSut> {
      * @return the dependency
      */
     public <TDependency> TDependency dependency(TypeToken<TDependency> typeToken) {
-        for (Dependency d : _dependencies) {
+        for (Dependency d : dependencies) {
             if (d.typeToken.equals(typeToken)) {
                 return (TDependency)d.get();
             }
         }
 
-        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
+        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), sutTypeToken.getRawType().getSimpleName()));
     }
 
     /**
@@ -148,12 +151,13 @@ public class SystemUnderTestFactory<TSut> {
      * @return object that allows you to supply your own dependency
      */
     public <TDependency> DoForDependency<TDependency> forDependency(TypeToken<TDependency> typeToken) {
-        List<Dependency> dependencies = _dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
+        List<Dependency> dependencies = this.dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
 
-        if (dependencies.size() > 0)
+        if (dependencies.size() > 0) {
             return new DoForDependency(dependencies);
+        }
 
-        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
+        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), sutTypeToken.getRawType().getSimpleName()));
     }
 
     /**
@@ -177,11 +181,12 @@ public class SystemUnderTestFactory<TSut> {
      * @return object that allows you to supply your own dependencies
      */
     public <TDependency> DoForDependencies<TDependency> forDependencies(TypeToken<TDependency> typeToken) {
-        List<Dependency> dependencies = _dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
+        List<Dependency> dependencies = this.dependencies.stream().filter(x -> x.typeToken.equals(typeToken)).collect(Collectors.toList());
 
-        if (dependencies.size() > 0)
+        if (dependencies.size() > 0) {
             return new DoForDependencies<>(dependencies);
+        }
 
-        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), _typeToken.getRawType().getSimpleName()));
+        throw new UnsupportedOperationException(String.format("%s is not a dependency of %s", typeToken.getRawType().getSimpleName(), sutTypeToken.getRawType().getSimpleName()));
     }
 }
